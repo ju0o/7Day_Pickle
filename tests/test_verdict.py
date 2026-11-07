@@ -20,7 +20,7 @@ class TestOneWordScaffolding(unittest.TestCase):
             "src/engine/personas.js",
             "src/engine/verdict.js",
             "src/storage/history.js",
-            ".github/workflows/deploy.yml",
+            "docs/DEPLOYMENT_GUIDE.md",
             "site.webmanifest",
             "docs/NOTION_MASTER_PAGE.md",
             "README.md"
@@ -39,10 +39,10 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("wrapText", content)
 
     def test_workflow_and_manifest(self):
-        wf_path = os.path.join(PROJECT_ROOT, ".github/workflows/deploy.yml")
-        with open(wf_path, "r", encoding="utf-8") as f:
+        deploy_guide_path = os.path.join(PROJECT_ROOT, "docs/DEPLOYMENT_GUIDE.md")
+        with open(deploy_guide_path, "r", encoding="utf-8") as f:
             content = f.read()
-        self.assertIn("deploy-pages", content)
+        self.assertIn("GitHub Pages", content)
 
         manifest_path = os.path.join(PROJECT_ROOT, "site.webmanifest")
         with open(manifest_path, "r", encoding="utf-8") as f:

@@ -47,8 +47,8 @@ python3 -m http.server 8080
 5. **로컬 퍼스트 판결 보관함 모달 & URL 공유 (`src/storage/history.js`)**:
    - LocalStorage 기반 최근 판결 영구 보관, 모달 뷰어를 통한 과거 판결 재열람/삭제/이미지 재발급
    - Base64 URL Fragment 해시로 서버 없이 판결 상태 복사 및 전송
-6. **자동 배포 CI & 소셜 메타 태그 (`.github/workflows/deploy.yml`)**:
-   - GitHub Pages 원클릭 자동 배포 워크플로우 완비
+6. **원클릭 배포 가이드 & 소셜 메타 태그 (`docs/DEPLOYMENT_GUIDE.md`)**:
+   - 빌드 과정 없는 네이티브 GitHub Pages 배포 가이드 완비
    - Open Graph 및 Twitter Card 소셜 메타 태그, PWA 매니페스트 장착
 
 ---
