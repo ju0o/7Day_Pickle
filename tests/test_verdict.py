@@ -71,6 +71,7 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("career", content)
         self.assertIn("love", content)
         self.assertIn("daily", content)
+        self.assertIn("CATEGORY_PRESETS", content)
 
     def test_storage_manager(self):
         storage_path = os.path.join(PROJECT_ROOT, "src/storage/history.js")
@@ -78,6 +79,8 @@ class TestOneWordScaffolding(unittest.TestCase):
             content = f.read()
         self.assertIn("saveVerdict", content)
         self.assertIn("getHistory", content)
+        self.assertIn("deleteVerdict", content)
+        self.assertIn("clearHistory", content)
         self.assertIn("encodeState", content)
         self.assertIn("decodeState", content)
 

@@ -1,8 +1,8 @@
 /**
- * OneWord: Main Application Controller (v0.3 - Canvas Image Generator Update)
+ * OneWord: Main Application Controller (v0.4 - Category Filter & History Modal)
  */
 
-import { VerdictEngine } from "./engine/verdict.js";
+import { VerdictEngine, CATEGORY_PRESETS } from "./engine/verdict.js";
 import { StorageManager } from "./storage/history.js";
 import { sound } from "./audio/sound.js";
 import { CardGenerator } from "./canvas/cardGenerator.js";
@@ -43,7 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const judgingSection = document.getElementById("judgingSection");
   const resultSection = document.getElementById("resultSection");
   const resultCard = document.getElementById("resultCard");
-  const presetBtns = document.querySelectorAll(".preset-btn");
+  const presetsList = document.getElementById("presetsList");
+  const categoryTabs = document.querySelectorAll(".cat-tab");
 
   const judgeReason = document.getElementById("judgeReason");
   const judgeInstinct = document.getElementById("judgeInstinct");
@@ -59,9 +60,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetBtn = document.getElementById("resetBtn");
   const downloadSquareBtn = document.getElementById("downloadSquareBtn");
   const downloadStoryBtn = document.getElementById("downloadStoryBtn");
+
   const historyList = document.getElementById("historyList");
   const historySection = document.getElementById("historySection");
   const soundToggleBtn = document.getElementById("soundToggleBtn");
+  const historyCountBadge = document.getElementById("historyCountBadge");
+
+  // 모달 엘리먼트
+  const historyModal = document.getElementById("historyModal");
+  const openHistoryModalBtn = document.getElementById("openHistoryModalBtn");
+  const closeHistoryModalBtn = document.getElementById("closeHistoryModalBtn");
+  const viewAllHistoryBtn = document.getElementById("viewAllHistoryBtn");
+  const modalHistoryList = document.getElementById("modalHistoryList");
+  const clearAllHistoryBtn = document.getElementById("clearAllHistoryBtn");
+  const modalCatFilters = document.querySelectorAll(".modal-cat-filter");
+
+  let currentCategory = "all";
+  let modalFilterCat = "all";
 
   // 오디오 초기화
   const unlockAudio = () => {
@@ -82,19 +97,44 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // URL 해시 및 기록 확인
-  checkUrlHash();
+  // 초기 렌더링
+  renderPresets("all");
   renderHistory();
+  checkUrlHash();
 
-  // 프리셋 클릭
-  presetBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      sound.init();
+  // 카테고리 탭 스위칭
+  categoryTabs.forEach(tab => {
+    tab.addEventListener("click", () => {
       sound.playClick();
-      questionInput.value = btn.dataset.prompt;
-      questionInput.focus();
+      const cat = tab.dataset.category;
+      currentCategory = cat;
+
+      categoryTabs.forEach(t => {
+        t.className = "cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200 cursor-pointer";
+      });
+      tab.className = "cat-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition border border-cyan-500 bg-cyan-950/80 text-cyan-300 shadow-sm cursor-pointer";
+
+      renderPresets(cat);
     });
   });
+
+  function renderPresets(cat) {
+    const list = CATEGORY_PRESETS[cat] || CATEGORY_PRESETS.all;
+    presetsList.innerHTML = "";
+
+    list.forEach(p => {
+      const btn = document.createElement("button");
+      btn.className = "preset-btn text-xs bg-gray-950 hover:bg-gray-800 text-gray-300 border border-gray-800 px-3 py-1.5 rounded-lg transition cursor-pointer";
+      btn.textContent = p.label;
+      btn.addEventListener("click", () => {
+        sound.init();
+        sound.playClick();
+        questionInput.value = p.prompt;
+        questionInput.focus();
+      });
+      presetsList.appendChild(btn);
+    });
+  }
 
   // 제출 이벤트
   submitBtn.addEventListener("click", () => {
@@ -139,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 1:1 피드 카드 이미지 다운로드
+  // 1:1 피드 카드 다운로드
   if (downloadSquareBtn) {
     downloadSquareBtn.addEventListener("click", () => {
       sound.playClick();
@@ -152,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 9:16 스토리 카드 이미지 다운로드
+  // 9:16 스토리 카드 다운로드
   if (downloadStoryBtn) {
     downloadStoryBtn.addEventListener("click", () => {
       sound.playClick();
@@ -160,8 +200,50 @@ document.addEventListener("DOMContentLoaded", () => {
       downloadStoryBtn.textContent = "생성 중...";
       setTimeout(() => {
         CardGenerator.downloadImage(window.currentVerdict, "story");
-        downloadStoryBtn.textContent = "📱 9:16 스토리 카드 저장";
+        downloadStoryBtn.textContent = "📱 9:16 스토리 저장";
       }, 100);
+    });
+  }
+
+  // 모달 열기/닫기
+  const openModal = () => {
+    sound.playClick();
+    historyModal.classList.remove("hidden");
+    renderModalHistory(modalFilterCat);
+  };
+  const closeModal = () => {
+    sound.playClick();
+    historyModal.classList.add("hidden");
+  };
+
+  if (openHistoryModalBtn) openHistoryModalBtn.addEventListener("click", openModal);
+  if (viewAllHistoryBtn) viewAllHistoryBtn.addEventListener("click", openModal);
+  if (closeHistoryModalBtn) closeHistoryModalBtn.addEventListener("click", closeModal);
+  historyModal.addEventListener("click", (e) => {
+    if (e.target === historyModal) closeModal();
+  });
+
+  // 모달 카테고리 필터
+  modalCatFilters.forEach(btn => {
+    btn.addEventListener("click", () => {
+      sound.playClick();
+      modalCatFilters.forEach(b => {
+        b.className = "modal-cat-filter px-2.5 py-1 rounded-lg bg-gray-950 text-gray-400 border border-gray-800 cursor-pointer";
+      });
+      btn.className = "modal-cat-filter px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-400 font-bold border border-cyan-800 cursor-pointer";
+      modalFilterCat = btn.dataset.cat;
+      renderModalHistory(modalFilterCat);
+    });
+  });
+
+  // 전체 기록 비우기
+  if (clearAllHistoryBtn) {
+    clearAllHistoryBtn.addEventListener("click", () => {
+      if (confirm("정말로 모든 판결 기록을 삭제하시겠습니까?")) {
+        StorageManager.clearHistory();
+        renderHistory();
+        renderModalHistory(modalFilterCat);
+      }
     });
   }
 
@@ -198,19 +280,15 @@ document.addEventListener("DOMContentLoaded", () => {
     judgeInstinct.textContent = "";
     judgeRealist.textContent = "";
 
-    // 1단계: 이성 심판관 발언 (0.2s)
     setTimeout(() => {
       sound.playJudgeCue(440);
       typeText(judgeReason, `"${verdict.opinions.reason}"`, 20, () => {
-        // 2단계: 행동 심판관 발언 (이성 완료 후)
         setTimeout(() => {
           sound.playJudgeCue(580);
           typeText(judgeInstinct, `"${verdict.opinions.instinct}"`, 20, () => {
-            // 3단계: 현실 심판관 발언 (행동 완료 후)
             setTimeout(() => {
               sound.playJudgeCue(720);
               typeText(judgeRealist, `"${verdict.opinions.realist}"`, 20, () => {
-                // 4단계: 법봉 타격 & 최종 선고 (0.5s 후)
                 setTimeout(() => {
                   revealVerdict(verdict);
                 }, 500);
@@ -259,6 +337,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderHistory() {
     const history = StorageManager.getHistory();
+    if (historyCountBadge) {
+      if (history.length > 0) {
+        historyCountBadge.textContent = history.length;
+        historyCountBadge.classList.remove("hidden");
+      } else {
+        historyCountBadge.classList.add("hidden");
+      }
+    }
+
     if (history.length === 0) {
       historySection.classList.add("hidden");
       return;
@@ -267,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
     historySection.classList.remove("hidden");
     historyList.innerHTML = "";
 
-    history.slice(0, 5).forEach(item => {
+    history.slice(0, 4).forEach(item => {
       const theme = THEMES[item.category] || THEMES.daily;
       const div = document.createElement("div");
       div.className = "flex items-center justify-between p-3 bg-gray-900 border border-gray-800 rounded-lg hover:border-gray-700 transition cursor-pointer";
@@ -287,6 +374,70 @@ document.addEventListener("DOMContentLoaded", () => {
         revealVerdict(item);
       });
       historyList.appendChild(div);
+    });
+  }
+
+  function renderModalHistory(cat = "all") {
+    const list = StorageManager.getHistory(cat);
+    modalHistoryList.innerHTML = "";
+
+    if (list.length === 0) {
+      modalHistoryList.innerHTML = `
+        <div class="text-center py-10 text-gray-500 text-sm">
+          보관된 판결이 없습니다.
+        </div>
+      `;
+      return;
+    }
+
+    list.forEach(item => {
+      const theme = THEMES[item.category] || THEMES.daily;
+      const card = document.createElement("div");
+      card.className = "p-3.5 bg-gray-950 border border-gray-800 rounded-xl space-y-2 hover:border-gray-700 transition";
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-xs px-1.5 py-0.5 rounded ${theme.badge}">${item.category.toUpperCase()}</span>
+          <span class="text-xs font-mono text-gray-500">${new Date(item.decided_at || Date.now()).toLocaleDateString("ko-KR")}</span>
+        </div>
+        <div class="text-sm text-white font-semibold truncate">Q. ${item.question}</div>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-xl font-black ${theme.text}">${item.verdict_word}</span>
+          <span class="text-xs font-bold text-gray-400">(${item.verdict_kr})</span>
+        </div>
+        <p class="text-xs text-gray-400 italic line-clamp-1">"${item.punchline}"</p>
+        <div class="pt-2 border-t border-gray-900 flex items-center justify-between text-xs">
+          <button class="reopen-verdict-btn text-cyan-400 hover:underline cursor-pointer">
+            🔍 다시 열기
+          </button>
+          <div class="flex items-center space-x-2">
+            <button class="save-img-btn text-gray-300 hover:text-white cursor-pointer">
+              🖼️ 카드저장
+            </button>
+            <button class="del-verdict-btn text-red-400 hover:text-red-300 cursor-pointer">
+              ✕ 삭제
+            </button>
+          </div>
+        </div>
+      `;
+
+      card.querySelector(".reopen-verdict-btn").addEventListener("click", () => {
+        closeModal();
+        window.currentVerdict = item;
+        inputSection.classList.add("hidden");
+        revealVerdict(item);
+      });
+
+      card.querySelector(".save-img-btn").addEventListener("click", () => {
+        CardGenerator.downloadImage(item, "square");
+      });
+
+      card.querySelector(".del-verdict-btn").addEventListener("click", () => {
+        StorageManager.deleteVerdict(item.id);
+        renderHistory();
+        renderModalHistory(modalFilterCat);
+      });
+
+      modalHistoryList.appendChild(card);
     });
   }
 
