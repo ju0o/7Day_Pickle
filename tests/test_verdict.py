@@ -16,6 +16,7 @@ class TestOneWordScaffolding(unittest.TestCase):
             "index.html",
             "src/app.js",
             "src/audio/sound.js",
+            "src/canvas/cardGenerator.js",
             "src/engine/personas.js",
             "src/engine/verdict.js",
             "src/storage/history.js",
@@ -25,6 +26,15 @@ class TestOneWordScaffolding(unittest.TestCase):
         for rel in required_files:
             p = os.path.join(PROJECT_ROOT, rel)
             self.assertTrue(os.path.isfile(p), f"Missing required file: {rel}")
+
+    def test_card_generator(self):
+        card_gen_path = os.path.join(PROJECT_ROOT, "src/canvas/cardGenerator.js")
+        with open(card_gen_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("CardGenerator", content)
+        self.assertIn("renderCanvas", content)
+        self.assertIn("downloadImage", content)
+        self.assertIn("wrapText", content)
 
     def test_audio_sound_engine(self):
         sound_path = os.path.join(PROJECT_ROOT, "src/audio/sound.js")

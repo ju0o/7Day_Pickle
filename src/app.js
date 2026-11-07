@@ -1,10 +1,11 @@
 /**
- * OneWord: Main Application Controller (v0.2 - Audio & Animation Update)
+ * OneWord: Main Application Controller (v0.3 - Canvas Image Generator Update)
  */
 
 import { VerdictEngine } from "./engine/verdict.js";
 import { StorageManager } from "./storage/history.js";
 import { sound } from "./audio/sound.js";
+import { CardGenerator } from "./canvas/cardGenerator.js";
 
 const engine = new VerdictEngine();
 
@@ -56,11 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const confidenceBadge = document.getElementById("confidenceBadge");
   const shareBtn = document.getElementById("shareBtn");
   const resetBtn = document.getElementById("resetBtn");
+  const downloadSquareBtn = document.getElementById("downloadSquareBtn");
+  const downloadStoryBtn = document.getElementById("downloadStoryBtn");
   const historyList = document.getElementById("historyList");
   const historySection = document.getElementById("historySection");
   const soundToggleBtn = document.getElementById("soundToggleBtn");
 
-  // 오디오 초기화 (첫 유저 제스처)
+  // 오디오 초기화
   const unlockAudio = () => {
     sound.init();
     document.removeEventListener("click", unlockAudio);
@@ -136,6 +139,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // 1:1 피드 카드 이미지 다운로드
+  if (downloadSquareBtn) {
+    downloadSquareBtn.addEventListener("click", () => {
+      sound.playClick();
+      if (!window.currentVerdict) return;
+      downloadSquareBtn.textContent = "생성 중...";
+      setTimeout(() => {
+        CardGenerator.downloadImage(window.currentVerdict, "square");
+        downloadSquareBtn.textContent = "🖼️ 1:1 피드 카드 저장";
+      }, 100);
+    });
+  }
+
+  // 9:16 스토리 카드 이미지 다운로드
+  if (downloadStoryBtn) {
+    downloadStoryBtn.addEventListener("click", () => {
+      sound.playClick();
+      if (!window.currentVerdict) return;
+      downloadStoryBtn.textContent = "생성 중...";
+      setTimeout(() => {
+        CardGenerator.downloadImage(window.currentVerdict, "story");
+        downloadStoryBtn.textContent = "📱 9:16 스토리 카드 저장";
+      }, 100);
+    });
+  }
+
   function typeText(element, text, speed = 25, onComplete = null) {
     element.textContent = "";
     let idx = 0;
@@ -199,11 +228,9 @@ document.addEventListener("DOMContentLoaded", () => {
     judgingSection.classList.add("hidden");
     resultSection.classList.remove("hidden");
 
-    // 화면 셰이크 효과
     document.body.classList.add("shake-screen");
     setTimeout(() => document.body.classList.remove("shake-screen"), 500);
 
-    // 테마 적용
     const theme = THEMES[verdict.category] || THEMES.daily;
     applyTheme(theme, verdict);
 
@@ -226,7 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function applyTheme(theme, verdict) {
     if (!resultCard) return;
-    // 이전 테마 클래스 제거
     resultCard.className = `bg-gray-900 border-2 rounded-2xl p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden neon-glow ${theme.border}`;
     verdictWord.className = `text-6xl sm:text-7xl font-black tracking-tighter ${theme.text} neon-text`;
   }
