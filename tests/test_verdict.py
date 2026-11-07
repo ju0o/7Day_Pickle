@@ -20,6 +20,8 @@ class TestOneWordScaffolding(unittest.TestCase):
             "src/engine/personas.js",
             "src/engine/verdict.js",
             "src/storage/history.js",
+            ".github/workflows/deploy.yml",
+            "site.webmanifest",
             "docs/NOTION_MASTER_PAGE.md",
             "README.md"
         ]
@@ -35,6 +37,17 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("renderCanvas", content)
         self.assertIn("downloadImage", content)
         self.assertIn("wrapText", content)
+
+    def test_workflow_and_manifest(self):
+        wf_path = os.path.join(PROJECT_ROOT, ".github/workflows/deploy.yml")
+        with open(wf_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("deploy-pages", content)
+
+        manifest_path = os.path.join(PROJECT_ROOT, "site.webmanifest")
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("OneWord", content)
 
     def test_audio_sound_engine(self):
         sound_path = os.path.join(PROJECT_ROOT, "src/audio/sound.js")

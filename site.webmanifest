@@ -1,0 +1,16 @@
+{
+  "name": "OneWord — 3초 의사결정 심판소",
+  "short_name": "OneWord",
+  "description": "결정 장애를 3초 만에 끝내는 AI 단 하나의 단어 판결소",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#080a0f",
+  "theme_color": "#00e5ff",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

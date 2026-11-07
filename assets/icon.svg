@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="128" fill="#080a0f"/>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="#00e5ff" stroke-width="8" stroke-opacity="0.8"/>
+  <text x="50%" y="45%" text-anchor="middle" font-size="140" fill="#00e5ff" font-family="sans-serif">⚖️</text>
+  <text x="50%" y="78%" text-anchor="middle" font-size="72" font-weight="900" fill="#00e5ff" font-family="-apple-system, sans-serif" letter-spacing="4">ONE WORD</text>
+</svg>
