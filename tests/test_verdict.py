@@ -15,6 +15,7 @@ class TestOneWordScaffolding(unittest.TestCase):
         required_files = [
             "index.html",
             "src/app.js",
+            "src/audio/sound.js",
             "src/engine/personas.js",
             "src/engine/verdict.js",
             "src/storage/history.js",
@@ -24,6 +25,15 @@ class TestOneWordScaffolding(unittest.TestCase):
         for rel in required_files:
             p = os.path.join(PROJECT_ROOT, rel)
             self.assertTrue(os.path.isfile(p), f"Missing required file: {rel}")
+
+    def test_audio_sound_engine(self):
+        sound_path = os.path.join(PROJECT_ROOT, "src/audio/sound.js")
+        with open(sound_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("SoundEngine", content)
+        self.assertIn("playClick", content)
+        self.assertIn("playJudgeCue", content)
+        self.assertIn("playGavelImpact", content)
 
     def test_html_integrity(self):
         html_path = os.path.join(PROJECT_ROOT, "index.html")

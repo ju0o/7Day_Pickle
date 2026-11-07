@@ -33,7 +33,18 @@
       animation: pulse-glow 2s infinite;
     }
     .neon-text {
-      text-shadow: 0 0 10px rgba(0, 229, 255, 0.8), 0 0 20px rgba(0, 229, 255, 0.4);
+      text-shadow: 0 0 10px currentColor, 0 0 25px currentColor;
+    }
+    @keyframes screen-shake {
+      0%, 100% { transform: translate(0, 0); }
+      15% { transform: translate(-6px, 4px); }
+      30% { transform: translate(6px, -4px); }
+      45% { transform: translate(-4px, 2px); }
+      60% { transform: translate(4px, -2px); }
+      75% { transform: translate(-2px, 1px); }
+    }
+    .shake-screen {
+      animation: screen-shake 0.45s ease-in-out;
     }
   </style>
 </head>
@@ -49,8 +60,13 @@
         </span>
         <span class="text-xs bg-gray-800 text-cyan-400 px-2 py-0.5 rounded-full font-mono border border-gray-700">LAB</span>
       </div>
-      <div class="text-xs text-gray-400 font-mono">
-        7-Day Autonomous Experiment
+      <div class="flex items-center space-x-3">
+        <button id="soundToggleBtn" class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-gray-900 border border-gray-800 text-cyan-400 hover:bg-gray-800 transition cursor-pointer">
+          🔊 SOUND ON
+        </button>
+        <span class="text-xs text-gray-400 font-mono hidden sm:inline">
+          7-Day Autonomous Experiment
+        </span>
       </div>
     </div>
   </header>
@@ -94,16 +110,16 @@
         <div class="mt-6 pt-5 border-t border-gray-800/80">
           <div class="text-xs text-gray-500 font-medium mb-2.5">💡 빠른 질문 프리셋:</div>
           <div class="flex flex-wrap gap-2">
-            <button class="preset-btn text-xs bg-gray-950 hover:bg-gray-800 text-gray-300 border border-gray-800 px-3 py-1.5 rounded-lg transition" data-prompt="새벽 2시인데 컵라면 물 올릴까?">
+            <button class="preset-btn text-xs bg-gray-950 hover:bg-gray-800 text-gray-300 border border-gray-800 px-3 py-1.5 rounded-lg transition cursor-pointer" data-prompt="새벽 2시인데 컵라면 물 올릴까?">
               🍜 새벽 라면 먹을까
             </button>
-            <button class="preset-btn text-xs bg-gray-950 hover:bg-gray-800 text-gray-300 border border-gray-800 px-3 py-1.5 rounded-lg transition" data-prompt="이직 준비 지금 당장 시작할까?">
+            <button class="preset-btn text-xs bg-gray-950 hover:bg-gray-800 text-gray-300 border border-gray-800 px-3 py-1.5 rounded-lg transition cursor-pointer" data-prompt="이직 준비 지금 당장 시작할까?">
               💼 이직 준비할까
             </button>
-            <button class="preset-btn text-xs bg-gray-950 hover:bg-gray-800 text-gray-300 border border-gray-800 px-3 py-1.5 rounded-lg transition" data-prompt="에어팟 맥스 지금 살까 말까?">
+            <button class="preset-btn text-xs bg-gray-950 hover:bg-gray-800 text-gray-300 border border-gray-800 px-3 py-1.5 rounded-lg transition cursor-pointer" data-prompt="에어팟 맥스 지금 살까 말까?">
               🎧 지름신 결제할까
             </button>
-            <button class="preset-btn text-xs bg-gray-950 hover:bg-gray-800 text-gray-300 border border-gray-800 px-3 py-1.5 rounded-lg transition" data-prompt="새벽에 전 연인한테 카톡 보내볼까?">
+            <button class="preset-btn text-xs bg-gray-950 hover:bg-gray-800 text-gray-300 border border-gray-800 px-3 py-1.5 rounded-lg transition cursor-pointer" data-prompt="새벽에 전 연인한테 카톡 보내볼까?">
               💬 구남친/구여친 연락할까
             </button>
           </div>
@@ -121,30 +137,31 @@
       </h2>
 
       <div class="grid grid-cols-1 gap-3 max-w-lg mx-auto text-left text-sm mt-6">
-        <div class="p-3.5 bg-gray-900/90 border border-cyan-900/50 rounded-xl">
+        <div class="p-3.5 bg-gray-900/90 border border-cyan-900/50 rounded-xl min-h-[72px]">
           <span class="text-xs font-bold text-cyan-400">🧠 닥터 로직 (이성):</span>
-          <div id="judgeReason" class="text-gray-300 mt-1 italic">분석 중...</div>
+          <div id="judgeReason" class="text-gray-300 mt-1 italic font-mono text-xs sm:text-sm">분석 중...</div>
         </div>
-        <div class="p-3.5 bg-gray-900/90 border border-pink-900/50 rounded-xl">
+        <div class="p-3.5 bg-gray-900/90 border border-pink-900/50 rounded-xl min-h-[72px]">
           <span class="text-xs font-bold text-pink-400">⚡ 캡틴 바이브 (행동):</span>
-          <div id="judgeInstinct" class="text-gray-300 mt-1 italic">대기 중...</div>
+          <div id="judgeInstinct" class="text-gray-300 mt-1 italic font-mono text-xs sm:text-sm">대기 중...</div>
         </div>
-        <div class="p-3.5 bg-gray-900/90 border border-amber-900/50 rounded-xl">
+        <div class="p-3.5 bg-gray-900/90 border border-amber-900/50 rounded-xl min-h-[72px]">
           <span class="text-xs font-bold text-amber-400">💀 미스터 팩트 (현실):</span>
-          <div id="judgeRealist" class="text-gray-300 mt-1 italic">대기 중...</div>
+          <div id="judgeRealist" class="text-gray-300 mt-1 italic font-mono text-xs sm:text-sm">대기 중...</div>
         </div>
       </div>
     </div>
 
     <!-- [3] RESULT SECTION -->
     <div id="resultSection" class="hidden space-y-6">
-      <div class="bg-gray-900 border-2 border-cyan-500/80 rounded-2xl p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden neon-glow">
+      <div id="resultCard" class="bg-gray-900 border-2 border-cyan-500/80 rounded-2xl p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden neon-glow">
         
-        <div class="space-y-1">
-          <div class="text-xs uppercase tracking-widest text-cyan-400 font-mono font-bold">
-            THE FINAL VERDICT
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-center space-x-2">
+            <span id="categoryBadge" class="px-2 py-0.5 rounded text-xs font-mono font-bold uppercase bg-cyan-950 text-cyan-400 border border-cyan-800">DAILY</span>
+            <span id="confidenceBadge" class="text-xs font-mono text-gray-500">판결 확신도: 98%</span>
           </div>
-          <p id="verdictQuestion" class="text-sm text-gray-400 font-medium truncate max-w-md mx-auto">
+          <p id="verdictQuestion" class="text-sm text-gray-400 font-medium truncate max-w-md mx-auto pt-1">
             Q. 새벽 2시인데 라면 먹을까?
           </p>
         </div>
