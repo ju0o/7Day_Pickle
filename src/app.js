@@ -1,40 +1,48 @@
 /**
- * OneWord: Main Application Controller (v0.4 - Category Filter & History Modal)
+ * OneWord: Main Application Controller (v0.6 - Sound Themes, Particles & Gestures)
  */
 
 import { VerdictEngine, CATEGORY_PRESETS } from "./engine/verdict.js";
 import { StorageManager } from "./storage/history.js";
-import { sound } from "./audio/sound.js";
+import { sound, SOUND_THEMES } from "./audio/sound.js";
 import { CardGenerator } from "./canvas/cardGenerator.js";
+import { NeonParticleBurst } from "./fx/particles.js";
 
 const engine = new VerdictEngine();
+const particleBurst = new NeonParticleBurst("fxCanvas");
 
 const THEMES = {
   shopping: {
     border: "border-amber-500",
     text: "text-amber-400",
     glow: "shadow-amber-500/50",
-    badge: "bg-amber-950 text-amber-400 border-amber-800"
+    badge: "bg-amber-950 text-amber-400 border-amber-800",
+    colorHex: "#ffb703"
   },
   career: {
     border: "border-cyan-500",
     text: "text-cyan-400",
     glow: "shadow-cyan-500/50",
-    badge: "bg-cyan-950 text-cyan-400 border-cyan-800"
+    badge: "bg-cyan-950 text-cyan-400 border-cyan-800",
+    colorHex: "#00e5ff"
   },
   love: {
     border: "border-pink-500",
     text: "text-pink-400",
     glow: "shadow-pink-500/50",
-    badge: "bg-pink-950 text-pink-400 border-pink-800"
+    badge: "bg-pink-950 text-pink-400 border-pink-800",
+    colorHex: "#ff007f"
   },
   daily: {
     border: "border-purple-500",
     text: "text-purple-400",
     glow: "shadow-purple-500/50",
-    badge: "bg-purple-950 text-purple-400 border-purple-800"
+    badge: "bg-purple-950 text-purple-400 border-purple-800",
+    colorHex: "#a855f7"
   }
 };
+
+const CATEGORIES_ORDER = ["all", "shopping", "career", "love", "daily"];
 
 document.addEventListener("DOMContentLoaded", () => {
   const questionInput = document.getElementById("questionInput");
@@ -45,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultCard = document.getElementById("resultCard");
   const presetsList = document.getElementById("presetsList");
   const categoryTabs = document.querySelectorAll(".cat-tab");
+  const randomDiceBtn = document.getElementById("randomDiceBtn");
 
   const judgeReason = document.getElementById("judgeReason");
   const judgeInstinct = document.getElementById("judgeInstinct");
@@ -63,8 +72,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const historyList = document.getElementById("historyList");
   const historySection = document.getElementById("historySection");
-  const soundToggleBtn = document.getElementById("soundToggleBtn");
   const historyCountBadge = document.getElementById("historyCountBadge");
+
+  // 사운드 테마 드롭다운 엘리먼트
+  const soundThemeBtn = document.getElementById("soundThemeBtn");
+  const soundThemeLabel = document.getElementById("soundThemeLabel");
+  const soundThemeMenu = document.getElementById("soundThemeMenu");
+  const soundThemeOpts = document.querySelectorAll(".sound-theme-opt");
+  const soundMuteToggleBtn = document.getElementById("soundMuteToggleBtn");
+  const soundMuteLabel = document.getElementById("soundMuteLabel");
 
   // 모달 엘리먼트
   const historyModal = document.getElementById("historyModal");
@@ -87,34 +103,94 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("click", unlockAudio);
   document.addEventListener("keydown", unlockAudio);
 
-  // 사운드 토글
-  if (soundToggleBtn) {
-    soundToggleBtn.addEventListener("click", () => {
-      sound.isMuted = !sound.isMuted;
-      soundToggleBtn.textContent = sound.isMuted ? "🔇 SOUND OFF" : "🔊 SOUND ON";
-      soundToggleBtn.classList.toggle("text-gray-500", sound.isMuted);
-      soundToggleBtn.classList.toggle("text-cyan-400", !sound.isMuted);
+  // 사운드 테마 버튼 라벨 업데이트 함수
+  function updateSoundThemeUI() {
+    const activeTheme = sound.getTheme();
+    const info = SOUND_THEMES[activeTheme] || SOUND_THEMES.court;
+
+    if (sound.isMuted) {
+      soundThemeLabel.textContent = "🔇 MUTE";
+      soundThemeBtn.classList.remove("text-cyan-400");
+      soundThemeBtn.classList.add("text-gray-500");
+      if (soundMuteLabel) soundMuteLabel.textContent = "🔊 소리 켜기 (Unmute)";
+    } else {
+      soundThemeLabel.textContent = `${info.label.split(" ")[0]} ${activeTheme.toUpperCase()}`;
+      soundThemeBtn.classList.remove("text-gray-500");
+      soundThemeBtn.classList.add("text-cyan-400");
+      if (soundMuteLabel) soundMuteLabel.textContent = "🔇 음소거 (Mute)";
+    }
+
+    soundThemeOpts.forEach(opt => {
+      const isSelected = opt.dataset.theme === activeTheme && !sound.isMuted;
+      opt.classList.toggle("text-cyan-300", isSelected);
+      opt.classList.toggle("font-bold", isSelected);
+      opt.classList.toggle("text-gray-300", !isSelected);
     });
   }
+
+  // 사운드 테마 메뉴 토글
+  if (soundThemeBtn) {
+    soundThemeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      sound.init();
+      sound.playClick();
+      soundThemeMenu.classList.toggle("hidden");
+    });
+  }
+
+  document.addEventListener("click", (e) => {
+    if (soundThemeMenu && !soundThemeMenu.contains(e.target) && e.target !== soundThemeBtn) {
+      soundThemeMenu.classList.add("hidden");
+    }
+  });
+
+  soundThemeOpts.forEach(opt => {
+    opt.addEventListener("click", () => {
+      const theme = opt.dataset.theme;
+      sound.setTheme(theme);
+      sound.isMuted = false;
+      sound.init();
+      sound.playClick();
+      soundThemeMenu.classList.add("hidden");
+      updateSoundThemeUI();
+    });
+  });
+
+  if (soundMuteToggleBtn) {
+    soundMuteToggleBtn.addEventListener("click", () => {
+      sound.isMuted = !sound.isMuted;
+      sound.playClick();
+      soundThemeMenu.classList.add("hidden");
+      updateSoundThemeUI();
+    });
+  }
+
+  updateSoundThemeUI();
 
   // 초기 렌더링
   renderPresets("all");
   renderHistory();
   checkUrlHash();
 
-  // 카테고리 탭 스위칭
+  // 카테고리 탭 스위칭 함수
+  function switchCategory(cat) {
+    currentCategory = cat;
+    categoryTabs.forEach(t => {
+      const isMatch = t.dataset.category === cat;
+      if (isMatch) {
+        t.className = "cat-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition border border-cyan-500 bg-cyan-950/80 text-cyan-300 shadow-sm cursor-pointer";
+      } else {
+        t.className = "cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200 cursor-pointer";
+      }
+    });
+    renderPresets(cat);
+  }
+
   categoryTabs.forEach(tab => {
     tab.addEventListener("click", () => {
       sound.playClick();
-      const cat = tab.dataset.category;
-      currentCategory = cat;
-
-      categoryTabs.forEach(t => {
-        t.className = "cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200 cursor-pointer";
-      });
-      tab.className = "cat-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition border border-cyan-500 bg-cyan-950/80 text-cyan-300 shadow-sm cursor-pointer";
-
-      renderPresets(cat);
+      sound.triggerHaptic([25]);
+      switchCategory(tab.dataset.category);
     });
   });
 
@@ -129,12 +205,61 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.addEventListener("click", () => {
         sound.init();
         sound.playClick();
+        sound.triggerHaptic([30]);
         questionInput.value = p.prompt;
         questionInput.focus();
       });
       presetsList.appendChild(btn);
     });
   }
+
+  // 🎲 랜덤 고민 셔플러
+  if (randomDiceBtn) {
+    randomDiceBtn.addEventListener("click", () => {
+      sound.init();
+      sound.playClick();
+      sound.triggerHaptic([40]);
+
+      const allPresets = CATEGORY_PRESETS.all;
+      const pick = allPresets[Math.floor(Math.random() * allPresets.length)];
+
+      typeText(questionInput, pick.prompt, 18, () => {
+        questionInput.focus();
+      });
+    });
+  }
+
+  // 모바일 터치 스와이프 제스처 리스너
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  document.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  document.addEventListener("touchend", (e) => {
+    const diffX = e.changedTouches[0].screenX - touchStartX;
+    const diffY = e.changedTouches[0].screenY - touchStartY;
+
+    // 수평 스와이프 판정 (수평 이동 > 60px, 수직 이동 < 45px)
+    if (Math.abs(diffX) > 60 && Math.abs(diffY) < 45) {
+      const curIdx = CATEGORIES_ORDER.indexOf(currentCategory);
+      if (diffX < 0) {
+        // 왼쪽 스와이프 (다음 카테고리)
+        const nextIdx = (curIdx + 1) % CATEGORIES_ORDER.length;
+        switchCategory(CATEGORIES_ORDER[nextIdx]);
+        sound.playClick();
+        sound.triggerHaptic([20]);
+      } else {
+        // 오른쪽 스와이프 (이전 카테고리)
+        const prevIdx = (curIdx - 1 + CATEGORIES_ORDER.length) % CATEGORIES_ORDER.length;
+        switchCategory(CATEGORIES_ORDER[prevIdx]);
+        sound.playClick();
+        sound.triggerHaptic([20]);
+      }
+    }
+  }, { passive: true });
 
   // 제출 이벤트
   submitBtn.addEventListener("click", () => {
@@ -247,12 +372,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function typeText(element, text, speed = 25, onComplete = null) {
-    element.textContent = "";
+  function typeText(element, text, speed = 20, onComplete = null) {
+    const isInput = element.tagName === "TEXTAREA" || element.tagName === "INPUT";
+    if (isInput) {
+      element.value = "";
+    } else {
+      element.textContent = "";
+    }
+
     let idx = 0;
     const timer = setInterval(() => {
       if (idx < text.length) {
-        element.textContent += text.charAt(idx);
+        if (isInput) {
+          element.value += text.charAt(idx);
+        } else {
+          element.textContent += text.charAt(idx);
+        }
         if (idx % 3 === 0) sound.playClick();
         idx++;
       } else {
@@ -281,21 +416,21 @@ document.addEventListener("DOMContentLoaded", () => {
     judgeRealist.textContent = "";
 
     setTimeout(() => {
-      sound.playJudgeCue(440);
-      typeText(judgeReason, `"${verdict.opinions.reason}"`, 20, () => {
+      sound.playJudgeCue(440, 0);
+      typeText(judgeReason, `"${verdict.opinions.reason}"`, 18, () => {
         setTimeout(() => {
-          sound.playJudgeCue(580);
-          typeText(judgeInstinct, `"${verdict.opinions.instinct}"`, 20, () => {
+          sound.playJudgeCue(580, 1);
+          typeText(judgeInstinct, `"${verdict.opinions.instinct}"`, 18, () => {
             setTimeout(() => {
-              sound.playJudgeCue(720);
-              typeText(judgeRealist, `"${verdict.opinions.realist}"`, 20, () => {
+              sound.playJudgeCue(720, 2);
+              typeText(judgeRealist, `"${verdict.opinions.realist}"`, 18, () => {
                 setTimeout(() => {
                   revealVerdict(verdict);
-                }, 500);
+                }, 400);
               });
-            }, 200);
+            }, 180);
           });
-        }, 200);
+        }, 180);
       });
     }, 200);
   }
@@ -307,7 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resultSection.classList.remove("hidden");
 
     document.body.classList.add("shake-screen");
-    setTimeout(() => document.body.classList.remove("shake-screen"), 500);
+    setTimeout(() => document.body.classList.remove("shake-screen"), 450);
 
     const theme = THEMES[verdict.category] || THEMES.daily;
     applyTheme(theme, verdict);
@@ -326,12 +461,18 @@ document.addEventListener("DOMContentLoaded", () => {
       confidenceBadge.textContent = `판결 확신도: ${verdict.confidence || 98}%`;
     }
 
+    // 네온 파티클 폭죽 버스트 연출
+    const rect = resultCard.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height * 0.4;
+    particleBurst.burst(centerX, centerY, theme.colorHex, 50);
+
     renderHistory();
   }
 
   function applyTheme(theme, verdict) {
     if (!resultCard) return;
-    resultCard.className = `bg-gray-900 border-2 rounded-2xl p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden neon-glow ${theme.border}`;
+    resultCard.className = `bg-gray-900 border-2 rounded-2xl p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden neon-glow select-none ${theme.border}`;
     verdictWord.className = `text-6xl sm:text-7xl font-black tracking-tighter ${theme.text} neon-text`;
   }
 

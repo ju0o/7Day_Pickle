@@ -1,7 +1,8 @@
 """
-Automated Verification Suite for OneWord Web Application
+Automated Verification Suite for OneWord Web Application (v0.6)
 - Verifies HTML structure, script paths, and module syntax
 - Simulates keyword categorizations and verdict generation rules
+- Validates 4-theme sound synthesizer, neon particle engine, and random dilemma dice
 """
 
 import os
@@ -19,6 +20,7 @@ class TestOneWordScaffolding(unittest.TestCase):
             "src/canvas/cardGenerator.js",
             "src/engine/personas.js",
             "src/engine/verdict.js",
+            "src/fx/particles.js",
             "src/storage/history.js",
             "docs/DEPLOYMENT_GUIDE.md",
             "site.webmanifest",
@@ -54,9 +56,23 @@ class TestOneWordScaffolding(unittest.TestCase):
         with open(sound_path, "r", encoding="utf-8") as f:
             content = f.read()
         self.assertIn("SoundEngine", content)
+        self.assertIn("SOUND_THEMES", content)
+        self.assertIn("court", content)
+        self.assertIn("cyber", content)
+        self.assertIn("minimal", content)
+        self.assertIn("retro8bit", content)
+        self.assertIn("triggerHaptic", content)
         self.assertIn("playClick", content)
         self.assertIn("playJudgeCue", content)
         self.assertIn("playGavelImpact", content)
+
+    def test_particle_burst_engine(self):
+        fx_path = os.path.join(PROJECT_ROOT, "src/fx/particles.js")
+        with open(fx_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("NeonParticleBurst", content)
+        self.assertIn("burst", content)
+        self.assertIn("animate", content)
 
     def test_html_integrity(self):
         html_path = os.path.join(PROJECT_ROOT, "index.html")
@@ -67,6 +83,9 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn('id="submitBtn"', content)
         self.assertIn('id="verdictWord"', content)
         self.assertIn('id="shareBtn"', content)
+        self.assertIn('id="fxCanvas"', content)
+        self.assertIn('id="soundThemeBtn"', content)
+        self.assertIn('id="randomDiceBtn"', content)
 
     def test_persona_definitions(self):
         persona_path = os.path.join(PROJECT_ROOT, "src/engine/personas.js")
