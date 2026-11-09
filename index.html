@@ -249,7 +249,7 @@
           </p>
         </div>
 
-        <!-- [POLL] 시민 배심원단 여론 투표 섹션 (신규) -->
+        <!-- [POLL] 시민 배심원단 여론 투표 섹션 -->
         <div id="communityPollSection" class="p-4 bg-gray-950/90 rounded-xl border border-gray-800 space-y-3 text-left">
           <div class="flex items-center justify-between text-xs">
             <span class="font-bold text-gray-300 flex items-center space-x-1.5">
@@ -286,7 +286,32 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="space-y-2.5 pt-2">
+        <div class="space-y-3 pt-2">
+
+          <!-- [신규] 카드 비주얼 테마 스타일러 (4종) -->
+          <div class="space-y-1.5 text-left bg-gray-950/60 p-3 rounded-xl border border-gray-800/80">
+            <div class="flex items-center justify-between text-xs text-gray-400">
+              <span class="font-bold flex items-center space-x-1">
+                <span>🎨 SNS 카드 테마 선택:</span>
+              </span>
+              <span id="activeCardStyleLabel" class="text-cyan-400 font-mono text-[11px] font-bold">⚡ 사이버 네온</span>
+            </div>
+            <div class="grid grid-cols-4 gap-1.5" id="cardStyleContainer">
+              <button class="card-style-btn py-2 px-1 rounded-lg text-xs font-bold border border-cyan-500 bg-cyan-950/80 text-cyan-300 transition cursor-pointer text-center" data-style="cyber">
+                ⚡ 사이버
+              </button>
+              <button class="card-style-btn py-2 px-1 rounded-lg text-xs font-medium border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200 transition cursor-pointer text-center" data-style="minimal">
+                🖤 미니멀
+              </button>
+              <button class="card-style-btn py-2 px-1 rounded-lg text-xs font-medium border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200 transition cursor-pointer text-center" data-style="parchment">
+                📜 고전법정
+              </button>
+              <button class="card-style-btn py-2 px-1 rounded-lg text-xs font-medium border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200 transition cursor-pointer text-center" data-style="retro8bit">
+                👾 8비트
+              </button>
+            </div>
+          </div>
+
           <!-- 1순위: SNS 이미지 저장 버튼 2종 -->
           <div class="grid grid-cols-2 gap-2.5">
             <button

@@ -1,11 +1,11 @@
 /**
- * OneWord: Main Application Controller (v0.6 - Sound Themes, Particles, Gestures & Community Poll)
+ * OneWord: Main Application Controller (v0.6.3 - Sound Themes, Particles, Gestures, Poll & Card Styler)
  */
 
 import { VerdictEngine, CATEGORY_PRESETS } from "./engine/verdict.js";
 import { StorageManager } from "./storage/history.js";
 import { sound, SOUND_THEMES } from "./audio/sound.js";
-import { CardGenerator } from "./canvas/cardGenerator.js";
+import { CardGenerator, CARD_STYLES } from "./canvas/cardGenerator.js";
 import { NeonParticleBurst } from "./fx/particles.js";
 import { VoteSimulator } from "./engine/voting.js";
 
@@ -85,6 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const pollAgreeText = document.getElementById("pollAgreeText");
   const pollDisagreeText = document.getElementById("pollDisagreeText");
   const pollConsensusText = document.getElementById("pollConsensusText");
+
+  // 카드 비주얼 테마 스타일러 엘리먼트
+  const cardStyleBtns = document.querySelectorAll(".card-style-btn");
+  const activeCardStyleLabel = document.getElementById("activeCardStyleLabel");
+  let currentCardStyle = "cyber";
 
   // 사운드 테마 드롭다운 엘리먼트
   const soundThemeBtn = document.getElementById("soundThemeBtn");
@@ -178,6 +183,26 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   updateSoundThemeUI();
+
+  // 카드 비주얼 스타일러 스위칭
+  cardStyleBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      sound.playClick();
+      sound.triggerHaptic([20]);
+      const style = btn.dataset.style;
+      currentCardStyle = style;
+
+      cardStyleBtns.forEach(b => {
+        b.className = "card-style-btn py-2 px-1 rounded-lg text-xs font-medium border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200 transition cursor-pointer text-center";
+      });
+      btn.className = "card-style-btn py-2 px-1 rounded-lg text-xs font-bold border border-cyan-500 bg-cyan-950/80 text-cyan-300 transition cursor-pointer text-center";
+
+      const info = CARD_STYLES[style] || CARD_STYLES.cyber;
+      if (activeCardStyleLabel) {
+        activeCardStyleLabel.textContent = `${info.label}`;
+      }
+    });
+  });
 
   // 초기 렌더링
   renderPresets("all");
@@ -317,7 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sound.playClick();
       sound.triggerHaptic([30, 60]);
       if (!window.currentVerdict) return;
-      const updated = VoteSimulator.castVote(window.currentVerdict, "agree");
+      VoteSimulator.castVote(window.currentVerdict, "agree");
       renderPoll(window.currentVerdict);
     });
   }
@@ -327,7 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sound.playClick();
       sound.triggerHaptic([30, 60]);
       if (!window.currentVerdict) return;
-      const updated = VoteSimulator.castVote(window.currentVerdict, "disagree");
+      VoteSimulator.castVote(window.currentVerdict, "disagree");
       renderPoll(window.currentVerdict);
     });
   }
@@ -382,7 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!window.currentVerdict) return;
       downloadSquareBtn.textContent = "생성 중...";
       setTimeout(() => {
-        CardGenerator.downloadImage(window.currentVerdict, "square");
+        CardGenerator.downloadImage(window.currentVerdict, "square", currentCardStyle);
         downloadSquareBtn.textContent = "🖼️ 1:1 피드 카드 저장";
       }, 100);
     });
@@ -395,7 +420,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!window.currentVerdict) return;
       downloadStoryBtn.textContent = "생성 중...";
       setTimeout(() => {
-        CardGenerator.downloadImage(window.currentVerdict, "story");
+        CardGenerator.downloadImage(window.currentVerdict, "story", currentCardStyle);
         downloadStoryBtn.textContent = "📱 9:16 스토리 저장";
       }, 100);
     });
@@ -643,7 +668,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       card.querySelector(".save-img-btn").addEventListener("click", () => {
-        CardGenerator.downloadImage(item, "square");
+        CardGenerator.downloadImage(item, "square", currentCardStyle);
       });
 
       card.querySelector(".del-verdict-btn").addEventListener("click", () => {

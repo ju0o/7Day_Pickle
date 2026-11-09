@@ -1,8 +1,8 @@
 """
-Automated Verification Suite for OneWord Web Application (v0.6.2 - Voting Simulator)
+Automated Verification Suite for OneWord Web Application (v0.6.3 - Card Visual Themes)
 - Verifies HTML structure, script paths, and module syntax
 - Simulates keyword categorizations and verdict generation rules
-- Validates 4-theme sound synthesizer, neon particle engine, random dilemma dice, and voting simulator
+- Validates 4-theme sound synthesizer, neon particle engine, voting simulator, and 4-theme card visual styler
 """
 
 import os
@@ -32,11 +32,20 @@ class TestOneWordScaffolding(unittest.TestCase):
             p = os.path.join(PROJECT_ROOT, rel)
             self.assertTrue(os.path.isfile(p), f"Missing required file: {rel}")
 
-    def test_card_generator(self):
+    def test_card_generator_and_styles(self):
         card_gen_path = os.path.join(PROJECT_ROOT, "src/canvas/cardGenerator.js")
         with open(card_gen_path, "r", encoding="utf-8") as f:
             content = f.read()
         self.assertIn("CardGenerator", content)
+        self.assertIn("CARD_STYLES", content)
+        self.assertIn("cyber", content)
+        self.assertIn("minimal", content)
+        self.assertIn("parchment", content)
+        self.assertIn("retro8bit", content)
+        self.assertIn("_renderCyber", content)
+        self.assertIn("_renderMinimal", content)
+        self.assertIn("_renderParchment", content)
+        self.assertIn("_renderRetro8Bit", content)
         self.assertIn("renderCanvas", content)
         self.assertIn("downloadImage", content)
         self.assertIn("wrapText", content)
@@ -98,9 +107,8 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn('id="soundThemeBtn"', content)
         self.assertIn('id="randomDiceBtn"', content)
         self.assertIn('id="communityPollSection"', content)
-        self.assertIn('id="pollAgreeBtn"', content)
-        self.assertIn('id="pollDisagreeBtn"', content)
-        self.assertIn('id="pollAgreeBar"', content)
+        self.assertIn('id="cardStyleContainer"', content)
+        self.assertIn('id="activeCardStyleLabel"', content)
 
     def test_persona_definitions(self):
         persona_path = os.path.join(PROJECT_ROOT, "src/engine/personas.js")
