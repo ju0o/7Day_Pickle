@@ -1,13 +1,14 @@
 /**
- * OneWord: Main Application Controller (v0.6.3 - Sound Themes, Particles, Gestures, Poll & Card Styler)
+ * OneWord: Main Application Controller (v0.6.4 - Sound Themes, Particles, Gestures, Poll, Card Styler & i18n)
  */
 
-import { VerdictEngine, CATEGORY_PRESETS } from "./engine/verdict.js";
+import { VerdictEngine } from "./engine/verdict.js";
 import { StorageManager } from "./storage/history.js";
 import { sound, SOUND_THEMES } from "./audio/sound.js";
 import { CardGenerator, CARD_STYLES } from "./canvas/cardGenerator.js";
 import { NeonParticleBurst } from "./fx/particles.js";
 import { VoteSimulator } from "./engine/voting.js";
+import { i18n } from "./i18n/translations.js";
 
 const engine = new VerdictEngine();
 const particleBurst = new NeonParticleBurst("fxCanvas");
@@ -75,6 +76,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const historySection = document.getElementById("historySection");
   const historyCountBadge = document.getElementById("historyCountBadge");
 
+  // 다국어 i18n 엘리먼트
+  const langToggleBtn = document.getElementById("langToggleBtn");
+  const langCurrentBadge = document.getElementById("langCurrentBadge");
+
   // 시민 배심원 투표 엘리먼트
   const userVotedBadge = document.getElementById("userVotedBadge");
   const pollParticipantCount = document.getElementById("pollParticipantCount");
@@ -120,6 +125,82 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("click", unlockAudio);
   document.addEventListener("keydown", unlockAudio);
 
+  // 다국어 UI 렌더링 함수
+  function updateI18nUI() {
+    const curLang = i18n.getLanguage();
+    if (langCurrentBadge) {
+      langCurrentBadge.textContent = curLang.toUpperCase();
+      langCurrentBadge.classList.toggle("text-cyan-400", true);
+    }
+
+    // 텍스트 일괄 치환
+    const map = [
+      ["mainTitle", "title", true],
+      ["mainSubtitle", "subtitle"],
+      ["mobileSwipeHint", "swipe_hint"],
+      ["inputLabel", "input_label"],
+      ["randomDiceText", "random_btn"],
+      ["submitBtnText", "submit_btn"],
+      ["recommendPresetsLabel", "recommend_presets"],
+      ["oneClickHint", "one_click_hint"],
+      ["judgingTitle", "judging_title"],
+      ["judgeReasonLabel", "judge_reason"],
+      ["judgeInstinctLabel", "judge_instinct"],
+      ["judgeRealistLabel", "judge_realist"],
+      ["pollTitle", "poll_title"],
+      ["pollAgreeBtnText", "poll_agree"],
+      ["pollDisagreeBtnText", "poll_disagree"],
+      ["cardStyleTitle", "card_style_label"],
+      ["downloadSquareText", "save_square"],
+      ["downloadStoryText", "save_story"],
+      ["shareBtnText", "copy_link"],
+      ["resetBtnText", "reset_btn"],
+      ["recentHistoryTitle", "recent_history"],
+      ["viewAllHistoryBtn", "view_all_history"],
+      ["modalTitle", "history_modal_title"],
+      ["modalSubtitle", "history_modal_subtitle"],
+      ["clearAllHistoryBtn", "clear_all_btn"],
+      ["archiveBtnLabel", "archive_btn"]
+    ];
+
+    map.forEach(([id, key, isHtml]) => {
+      const el = document.getElementById(id);
+      if (el) {
+        if (isHtml) {
+          el.innerHTML = i18n.t(key);
+        } else {
+          el.textContent = i18n.t(key);
+        }
+      }
+    });
+
+    // 카테고리 탭 텍스트
+    categoryTabs.forEach(tab => {
+      const cat = tab.dataset.category;
+      tab.textContent = i18n.t(`cat_${cat}`);
+    });
+
+    if (questionInput) {
+      questionInput.placeholder = i18n.t("input_placeholder");
+    }
+
+    renderPresets(currentCategory);
+    if (window.currentVerdict) {
+      renderPoll(window.currentVerdict);
+    }
+  }
+
+  // 언어 토글 이벤트
+  if (langToggleBtn) {
+    langToggleBtn.addEventListener("click", () => {
+      sound.playClick();
+      sound.triggerHaptic([20]);
+      const nextLang = i18n.getLanguage() === "ko" ? "en" : "ko";
+      i18n.setLanguage(nextLang);
+      updateI18nUI();
+    });
+  }
+
   // 사운드 테마 버튼 라벨 업데이트 함수
   function updateSoundThemeUI() {
     const activeTheme = sound.getTheme();
@@ -129,12 +210,12 @@ document.addEventListener("DOMContentLoaded", () => {
       soundThemeLabel.textContent = "🔇 MUTE";
       soundThemeBtn.classList.remove("text-cyan-400");
       soundThemeBtn.classList.add("text-gray-500");
-      if (soundMuteLabel) soundMuteLabel.textContent = "🔊 소리 켜기 (Unmute)";
+      if (soundMuteLabel) soundMuteLabel.textContent = "🔊 Unmute";
     } else {
       soundThemeLabel.textContent = `${info.label.split(" ")[0]} ${activeTheme.toUpperCase()}`;
       soundThemeBtn.classList.remove("text-gray-500");
       soundThemeBtn.classList.add("text-cyan-400");
-      if (soundMuteLabel) soundMuteLabel.textContent = "🔇 음소거 (Mute)";
+      if (soundMuteLabel) soundMuteLabel.textContent = "🔇 Mute";
     }
 
     soundThemeOpts.forEach(opt => {
@@ -205,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // 초기 렌더링
-  renderPresets("all");
+  updateI18nUI();
   renderHistory();
   checkUrlHash();
 
@@ -232,7 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function renderPresets(cat) {
-    const list = CATEGORY_PRESETS[cat] || CATEGORY_PRESETS.all;
+    const list = i18n.getPresets(cat);
     presetsList.innerHTML = "";
 
     list.forEach(p => {
@@ -257,7 +338,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sound.playClick();
       sound.triggerHaptic([40]);
 
-      const allPresets = CATEGORY_PRESETS.all;
+      const allPresets = i18n.getPresets("all");
       const pick = allPresets[Math.floor(Math.random() * allPresets.length)];
 
       typeText(questionInput, pick.prompt, 18, () => {
@@ -303,7 +384,8 @@ document.addEventListener("DOMContentLoaded", () => {
     verdict.poll = poll;
 
     if (pollParticipantCount) {
-      pollParticipantCount.textContent = `총 ${poll.totalVotes.toLocaleString()}명 참여`;
+      const unit = i18n.getLanguage() === "en" ? "voters" : "명 참여";
+      pollParticipantCount.textContent = `${poll.totalVotes.toLocaleString()} ${unit}`;
     }
 
     if (pollAgreeBar && pollDisagreeBar) {
@@ -312,8 +394,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (pollAgreeText && pollDisagreeText) {
-      pollAgreeText.textContent = `인정 ${poll.agreePercent}% (${poll.agreeVotes.toLocaleString()}표)`;
-      pollDisagreeText.textContent = `반대 ${poll.disagreePercent}% (${poll.disagreeVotes.toLocaleString()}표)`;
+      const agreeWord = i18n.getLanguage() === "en" ? "Agree" : "인정";
+      const disagreeWord = i18n.getLanguage() === "en" ? "Disagree" : "반대";
+      pollAgreeText.textContent = `${agreeWord} ${poll.agreePercent}% (${poll.agreeVotes.toLocaleString()})`;
+      pollDisagreeText.textContent = `${disagreeWord} ${poll.disagreePercent}% (${poll.disagreeVotes.toLocaleString()})`;
     }
 
     if (pollConsensusText) {
@@ -323,7 +407,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (userVotedBadge) {
       if (poll.userVote) {
         userVotedBadge.classList.remove("hidden");
-        userVotedBadge.textContent = poll.userVote === "agree" ? "👍 인정 투표완료" : "👎 반대 투표완료";
+        userVotedBadge.textContent = poll.userVote === "agree" 
+          ? i18n.t("poll_voted_agree") 
+          : i18n.t("poll_voted_disagree");
       } else {
         userVotedBadge.classList.add("hidden");
       }
@@ -389,14 +475,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     navigator.clipboard.writeText(shareUrl).then(() => {
       const originalText = shareBtn.innerHTML;
-      shareBtn.innerHTML = "<span>링크 복사 완료! 🎉</span>";
+      shareBtn.innerHTML = `<span>${i18n.t("copied_link")}</span>`;
       shareBtn.classList.add("bg-green-600");
       setTimeout(() => {
         shareBtn.innerHTML = originalText;
         shareBtn.classList.remove("bg-green-600");
       }, 2000);
     }).catch(() => {
-      alert(`공유 링크: ${shareUrl}`);
+      alert(`Share Link: ${shareUrl}`);
     });
   });
 
@@ -405,10 +491,10 @@ document.addEventListener("DOMContentLoaded", () => {
     downloadSquareBtn.addEventListener("click", () => {
       sound.playClick();
       if (!window.currentVerdict) return;
-      downloadSquareBtn.textContent = "생성 중...";
+      downloadSquareBtn.textContent = i18n.getLanguage() === "en" ? "Generating..." : "생성 중...";
       setTimeout(() => {
         CardGenerator.downloadImage(window.currentVerdict, "square", currentCardStyle);
-        downloadSquareBtn.textContent = "🖼️ 1:1 피드 카드 저장";
+        downloadSquareBtn.innerHTML = `<span id="downloadSquareText">${i18n.t("save_square")}</span>`;
       }, 100);
     });
   }
@@ -418,10 +504,10 @@ document.addEventListener("DOMContentLoaded", () => {
     downloadStoryBtn.addEventListener("click", () => {
       sound.playClick();
       if (!window.currentVerdict) return;
-      downloadStoryBtn.textContent = "생성 중...";
+      downloadStoryBtn.textContent = i18n.getLanguage() === "en" ? "Generating..." : "생성 중...";
       setTimeout(() => {
         CardGenerator.downloadImage(window.currentVerdict, "story", currentCardStyle);
-        downloadStoryBtn.textContent = "📱 9:16 스토리 저장";
+        downloadStoryBtn.innerHTML = `<span id="downloadStoryText">${i18n.t("save_story")}</span>`;
       }, 100);
     });
   }
@@ -460,7 +546,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // 전체 기록 비우기
   if (clearAllHistoryBtn) {
     clearAllHistoryBtn.addEventListener("click", () => {
-      if (confirm("정말로 모든 판결 기록을 삭제하시겠습니까?")) {
+      const confirmMsg = i18n.getLanguage() === "en" ? "Clear all verdict records?" : "정말로 모든 판결 기록을 삭제하시겠습니까?";
+      if (confirm(confirmMsg)) {
         StorageManager.clearHistory();
         renderHistory();
         renderModalHistory(modalFilterCat);
@@ -503,7 +590,7 @@ document.addEventListener("DOMContentLoaded", () => {
     inputSection.classList.add("hidden");
     judgingSection.classList.remove("hidden");
 
-    const verdict = engine.evaluate(q);
+    const verdict = engine.evaluate(q, i18n.getLanguage());
     window.currentVerdict = verdict;
     StorageManager.saveVerdict(verdict);
 
@@ -554,7 +641,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (confidenceBadge) {
-      confidenceBadge.textContent = `판결 확신도: ${verdict.confidence || 98}%`;
+      const confWord = i18n.getLanguage() === "en" ? "Confidence:" : "판결 확신도:";
+      confidenceBadge.textContent = `${confWord} ${verdict.confidence || 98}%`;
     }
 
     // 네온 파티클 폭죽 버스트 연출
@@ -624,7 +712,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (list.length === 0) {
       modalHistoryList.innerHTML = `
         <div class="text-center py-10 text-gray-500 text-sm">
-          보관된 판결이 없습니다.
+          ${i18n.t("no_history")}
         </div>
       `;
       return;
@@ -647,14 +735,14 @@ document.addEventListener("DOMContentLoaded", () => {
         <p class="text-xs text-gray-400 italic line-clamp-1">"${item.punchline}"</p>
         <div class="pt-2 border-t border-gray-900 flex items-center justify-between text-xs">
           <button class="reopen-verdict-btn text-cyan-400 hover:underline cursor-pointer">
-            🔍 다시 열기
+            🔍 ${i18n.getLanguage() === "en" ? "Reopen" : "다시 열기"}
           </button>
           <div class="flex items-center space-x-2">
             <button class="save-img-btn text-gray-300 hover:text-white cursor-pointer">
-              🖼️ 카드저장
+              🖼️ ${i18n.getLanguage() === "en" ? "Save Card" : "카드저장"}
             </button>
             <button class="del-verdict-btn text-red-400 hover:text-red-300 cursor-pointer">
-              ✕ 삭제
+              ✕ ${i18n.getLanguage() === "en" ? "Delete" : "삭제"}
             </button>
           </div>
         </div>

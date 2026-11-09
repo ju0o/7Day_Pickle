@@ -1,8 +1,8 @@
 """
-Automated Verification Suite for OneWord Web Application (v0.6.3 - Card Visual Themes)
+Automated Verification Suite for OneWord Web Application (v0.6.4 - Multilingual i18n)
 - Verifies HTML structure, script paths, and module syntax
 - Simulates keyword categorizations and verdict generation rules
-- Validates 4-theme sound synthesizer, neon particle engine, voting simulator, and 4-theme card visual styler
+- Validates 4-theme sound synthesizer, neon particle engine, voting simulator, 4-theme card styler, and i18n
 """
 
 import os
@@ -22,6 +22,7 @@ class TestOneWordScaffolding(unittest.TestCase):
             "src/engine/verdict.js",
             "src/engine/voting.js",
             "src/fx/particles.js",
+            "src/i18n/translations.js",
             "src/storage/history.js",
             "docs/DEPLOYMENT_GUIDE.md",
             "site.webmanifest",
@@ -31,6 +32,16 @@ class TestOneWordScaffolding(unittest.TestCase):
         for rel in required_files:
             p = os.path.join(PROJECT_ROOT, rel)
             self.assertTrue(os.path.isfile(p), f"Missing required file: {rel}")
+
+    def test_i18n_translations(self):
+        i18n_path = os.path.join(PROJECT_ROOT, "src/i18n/translations.js")
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("TRANSLATIONS", content)
+        self.assertIn("GLOBAL_PRESETS", content)
+        self.assertIn("I18nEngine", content)
+        self.assertIn("ko:", content)
+        self.assertIn("en:", content)
 
     def test_card_generator_and_styles(self):
         card_gen_path = os.path.join(PROJECT_ROOT, "src/canvas/cardGenerator.js")
@@ -109,6 +120,8 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn('id="communityPollSection"', content)
         self.assertIn('id="cardStyleContainer"', content)
         self.assertIn('id="activeCardStyleLabel"', content)
+        self.assertIn('id="langToggleBtn"', content)
+        self.assertIn('id="langCurrentBadge"', content)
 
     def test_persona_definitions(self):
         persona_path = os.path.join(PROJECT_ROOT, "src/engine/personas.js")
@@ -117,8 +130,9 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("reason", content)
         self.assertIn("instinct", content)
         self.assertIn("realist", content)
+        self.assertIn("nameEn", content)
 
-    def test_verdict_engine_categories(self):
+    def test_verdict_engine_categories_and_i18n(self):
         engine_path = os.path.join(PROJECT_ROOT, "src/engine/verdict.js")
         with open(engine_path, "r", encoding="utf-8") as f:
             content = f.read()
@@ -127,6 +141,10 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("love", content)
         self.assertIn("daily", content)
         self.assertIn("CATEGORY_PRESETS", content)
+        self.assertIn("GLOBAL_PRESETS", content)
+        self.assertIn("buy", content)
+        self.assertIn("quit", content)
+        self.assertIn("pizza", content)
 
     def test_storage_manager(self):
         storage_path = os.path.join(PROJECT_ROOT, "src/storage/history.js")

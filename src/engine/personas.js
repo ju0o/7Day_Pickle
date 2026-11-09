@@ -1,15 +1,30 @@
 /**
- * OneWord: 3대 가상 AI 심판관 페르소나 정의
+ * OneWord: 3대 가상 AI 심판관 페르소나 정의 (v0.6.4 - Bilingual 지원)
  */
 
 export const JUDGES = {
   reason: {
     id: "reason",
     name: "닥터 로직 (이성)",
+    nameEn: "Dr. Logic (Reason)",
     icon: "🧠",
     role: "확률과 효율의 분석가",
     color: "#00e5ff",
-    evaluate: (question, category) => {
+    evaluate: (question, category, lang = "ko") => {
+      if (lang === "en") {
+        switch (category) {
+          case "shopping":
+            return "Have you calculated the true utility-to-cost ratio? Dopamine spikes fade within 48 hours.";
+          case "career":
+            return "Compare the growth ceiling of your current role against the opportunity cost with hard data.";
+          case "love":
+            return "Analyze behavioral patterns objectively. Wishful thinking is a waste of cognitive energy.";
+          case "daily":
+          default:
+            return "Quantify how this short-term impulse damages tomorrow's total productivity.";
+        }
+      }
+
       switch (category) {
         case "shopping":
           return "비용 대비 효용 가치를 계산해 보았는가? 감정적 도파민 충동은 48시간 내에 소멸한다.";
@@ -26,10 +41,25 @@ export const JUDGES = {
   instinct: {
     id: "instinct",
     name: "캡틴 바이브 (행동)",
+    nameEn: "Captain Vibe (Instinct)",
     icon: "⚡",
     role: "직관과 돌파의 행동가",
     color: "#ff007f",
-    evaluate: (question, category) => {
+    evaluate: (question, category, lang = "ko") => {
+      if (lang === "en") {
+        switch (category) {
+          case "shopping":
+            return "Hesitation means sold out! Regretting a purchase beats obsessing over what you missed.";
+          case "career":
+            return "Do you want to die inside a comfortable cage? Follow your adrenaline and disrupt the board.";
+          case "love":
+            return "Go straight ahead! Even if you get rejected, getting closure is how you move forward.";
+          case "daily":
+          default:
+            return "You only live once. What's the point of suppressing your desires right now?";
+        }
+      }
+
       switch (category) {
         case "shopping":
           return "망설이는 순간 품절이다. 사서 후회하는 게 안 사고 평생 생각나는 것보다 낫다.";
@@ -46,10 +76,25 @@ export const JUDGES = {
   realist: {
     id: "realist",
     name: "미스터 팩트 (현실)",
+    nameEn: "Mr. Fact (Realist)",
     icon: "💀",
     role: "냉혹한 현실 폭격기",
     color: "#ffb703",
-    evaluate: (question, category) => {
+    evaluate: (question, category, lang = "ko") => {
+      if (lang === "en") {
+        switch (category) {
+          case "shopping":
+            return "Did you even check your bank balance before asking? Next month's statement is your reality.";
+          case "career":
+            return "Quitting without an offer isn't freedom—it's survival hell. Hold the signed contract first.";
+          case "love":
+            return "If they truly cared, they wouldn't leave you overthinking alone at 2 AM.";
+          case "daily":
+          default:
+            return "Eat that junk now and you'll wake up bloated, nauseous, and full of self-loathing.";
+        }
+      }
+
       switch (category) {
         case "shopping":
           return "통장 잔고를 보고도 그 소리가 나오는가? 다음 달 카드 명세서가 네 현실이다.";

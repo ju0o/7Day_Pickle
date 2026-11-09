@@ -80,9 +80,16 @@
         <span class="text-xs bg-gray-800 text-cyan-400 px-2 py-0.5 rounded-full font-mono border border-gray-700">LAB</span>
       </div>
       <div class="flex items-center space-x-2">
+        <!-- 다국어 토글 버튼 (KR / EN) -->
+        <button id="langToggleBtn" class="text-xs font-mono font-bold px-2 py-1.5 rounded-lg bg-gray-900 border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition cursor-pointer flex items-center space-x-1">
+          <span id="langCurrentBadge" class="text-cyan-400">KR</span>
+          <span class="text-gray-600">/</span>
+          <span class="text-gray-400">EN</span>
+        </button>
+
         <!-- 보관함 버튼 -->
         <button id="openHistoryModalBtn" class="text-xs font-mono font-bold px-2.5 py-1.5 rounded-lg bg-gray-900 border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition cursor-pointer flex items-center space-x-1">
-          <span>🗂️ 보관함</span>
+          <span id="archiveBtnLabel">🗂️ 보관함</span>
           <span id="historyCountBadge" class="hidden px-1.5 py-0.2 bg-cyan-950 text-cyan-400 rounded-full text-[10px]">0</span>
         </button>
 
@@ -121,10 +128,10 @@
     <!-- [1] INPUT SECTION -->
     <div id="inputSection" class="space-y-6">
       <div class="text-center space-y-2">
-        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+        <h1 id="mainTitle" class="text-3xl sm:text-4xl font-extrabold tracking-tight">
           결정 장애, <span class="text-cyan-400">단 한 단어</span>로 끝냅니다.
         </h1>
-        <p class="text-gray-400 text-sm sm:text-base">
+        <p id="mainSubtitle" class="text-gray-400 text-sm sm:text-base">
           수많은 고민과 핑계는 접어두세요. 3명의 가상 AI 심판관이 3초 만에 선고합니다.
         </p>
       </div>
@@ -132,23 +139,23 @@
       <!-- Category Filter Tabs -->
       <div class="space-y-1.5">
         <div class="flex items-center justify-center space-x-1.5 overflow-x-auto pb-1" id="categoryTabContainer">
-          <button class="cat-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition border border-cyan-500 bg-cyan-950/80 text-cyan-300 shadow-sm" data-category="all">
+          <button class="cat-tab px-3.5 py-1.5 rounded-xl text-xs font-bold transition border border-cyan-500 bg-cyan-950/80 text-cyan-300 shadow-sm" data-category="all" data-i18n="cat_all">
             🔥 전체
           </button>
-          <button class="cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200" data-category="shopping">
+          <button class="cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200" data-category="shopping" data-i18n="cat_shopping">
             🛍️ 지름신
           </button>
-          <button class="cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200" data-category="career">
+          <button class="cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200" data-category="career" data-i18n="cat_career">
             💼 커리어
           </button>
-          <button class="cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200" data-category="love">
+          <button class="cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200" data-category="love" data-i18n="cat_love">
             💌 연애
           </button>
-          <button class="cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200" data-category="daily">
+          <button class="cat-tab px-3.5 py-1.5 rounded-xl text-xs font-medium transition border border-gray-800 bg-gray-900/60 text-gray-400 hover:text-gray-200" data-category="daily" data-i18n="cat_daily">
             🍜 일상
           </button>
         </div>
-        <div class="text-center text-[11px] text-gray-500 font-mono hidden sm:block">
+        <div id="mobileSwipeHint" class="text-center text-[11px] text-gray-500 font-mono hidden sm:block">
           💡 모바일 화면에서 좌우로 스와이프하면 카테고리가 즉시 전환됩니다
         </div>
       </div>
@@ -157,13 +164,13 @@
       <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-4 sm:p-6 shadow-2xl backdrop-blur relative overflow-hidden" id="interactiveInputCard">
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <label for="questionInput" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <label id="inputLabel" for="questionInput" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
               판결받을 고민 질문 입력
             </label>
             <!-- 🎲 랜덤 고민 셔플러 버튼 -->
             <button id="randomDiceBtn" class="text-xs bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 border border-cyan-800/80 px-2.5 py-1 rounded-lg transition flex items-center space-x-1 cursor-pointer">
               <span>🎲</span>
-              <span>랜덤 고민 셔플</span>
+              <span id="randomDiceText">랜덤 고민 셔플</span>
             </button>
           </div>
 
@@ -178,15 +185,15 @@
             id="submitBtn"
             class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-extrabold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-cyan-500/20 active:scale-[0.99] flex items-center justify-center space-x-2 text-base cursor-pointer"
           >
-            <span>⚖️ 3초 만에 최종 판결받기</span>
+            <span id="submitBtnText">⚖️ 3초 만에 최종 판결받기</span>
           </button>
         </div>
 
         <!-- Presets Container (동적 교체) -->
         <div class="mt-6 pt-5 border-t border-gray-800/80">
           <div class="flex items-center justify-between text-xs text-gray-500 font-medium mb-2.5">
-            <span>💡 추천 고민 질문:</span>
-            <span class="text-[11px] text-gray-600">원클릭 즉시 자동 입력</span>
+            <span id="recommendPresetsLabel">💡 추천 고민 질문:</span>
+            <span id="oneClickHint" class="text-[11px] text-gray-600">원클릭 즉시 자동 입력</span>
           </div>
           <div id="presetsList" class="flex flex-wrap gap-2"></div>
         </div>
@@ -198,21 +205,21 @@
       <div class="inline-block p-4 rounded-full bg-cyan-950/50 border border-cyan-800 animate-spin text-2xl">
         ⚖️
       </div>
-      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-cyan-300 animate-pulse">
+      <h2 id="judgingTitle" class="text-xl sm:text-2xl font-bold tracking-tight text-cyan-300 animate-pulse">
         3인의 AI 심판관이 난상토론 중입니다...
       </h2>
 
       <div class="grid grid-cols-1 gap-3 max-w-lg mx-auto text-left text-sm mt-6">
         <div class="p-3.5 bg-gray-900/90 border border-cyan-900/50 rounded-xl min-h-[72px]">
-          <span class="text-xs font-bold text-cyan-400">🧠 닥터 로직 (이성):</span>
+          <span id="judgeReasonLabel" class="text-xs font-bold text-cyan-400">🧠 닥터 로직 (이성):</span>
           <div id="judgeReason" class="text-gray-300 mt-1 italic font-mono text-xs sm:text-sm">분석 중...</div>
         </div>
         <div class="p-3.5 bg-gray-900/90 border border-pink-900/50 rounded-xl min-h-[72px]">
-          <span class="text-xs font-bold text-pink-400">⚡ 캡틴 바이브 (행동):</span>
+          <span id="judgeInstinctLabel" class="text-xs font-bold text-pink-400">⚡ 캡틴 바이브 (행동):</span>
           <div id="judgeInstinct" class="text-gray-300 mt-1 italic font-mono text-xs sm:text-sm">대기 중...</div>
         </div>
         <div class="p-3.5 bg-gray-900/90 border border-amber-900/50 rounded-xl min-h-[72px]">
-          <span class="text-xs font-bold text-amber-400">💀 미스터 팩트 (현실):</span>
+          <span id="judgeRealistLabel" class="text-xs font-bold text-amber-400">💀 미스터 팩트 (현실):</span>
           <div id="judgeRealist" class="text-gray-300 mt-1 italic font-mono text-xs sm:text-sm">대기 중...</div>
         </div>
       </div>
@@ -253,7 +260,7 @@
         <div id="communityPollSection" class="p-4 bg-gray-950/90 rounded-xl border border-gray-800 space-y-3 text-left">
           <div class="flex items-center justify-between text-xs">
             <span class="font-bold text-gray-300 flex items-center space-x-1.5">
-              <span>👥 시민 배심원단 투표</span>
+              <span id="pollTitle">👥 시민 배심원단 투표</span>
               <span id="userVotedBadge" class="hidden px-1.5 py-0.2 rounded text-[10px] font-bold bg-cyan-950 text-cyan-400 border border-cyan-800">투표완료</span>
             </span>
             <span id="pollParticipantCount" class="text-gray-500 font-mono">총 1,842명 참여</span>
@@ -262,10 +269,10 @@
           <!-- 투표 전: 찬반 선택 버튼 -->
           <div id="pollActionButtons" class="grid grid-cols-2 gap-2">
             <button id="pollAgreeBtn" class="py-2.5 px-3 rounded-xl bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-800/80 text-emerald-300 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-1.5 cursor-pointer active:scale-95 shadow-sm">
-              <span>👍 완전 인정</span>
+              <span id="pollAgreeBtnText">👍 완전 인정</span>
             </button>
             <button id="pollDisagreeBtn" class="py-2.5 px-3 rounded-xl bg-rose-950/70 hover:bg-rose-900 border border-rose-800/80 text-rose-300 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-1.5 cursor-pointer active:scale-95 shadow-sm">
-              <span>👎 결사 반대</span>
+              <span id="pollDisagreeBtnText">👎 결사 반대</span>
             </button>
           </div>
 
@@ -288,11 +295,11 @@
         <!-- Action Buttons -->
         <div class="space-y-3 pt-2">
 
-          <!-- [신규] 카드 비주얼 테마 스타일러 (4종) -->
+          <!-- 카드 비주얼 테마 스타일러 (4종) -->
           <div class="space-y-1.5 text-left bg-gray-950/60 p-3 rounded-xl border border-gray-800/80">
             <div class="flex items-center justify-between text-xs text-gray-400">
               <span class="font-bold flex items-center space-x-1">
-                <span>🎨 SNS 카드 테마 선택:</span>
+                <span id="cardStyleTitle">🎨 SNS 카드 테마 선택:</span>
               </span>
               <span id="activeCardStyleLabel" class="text-cyan-400 font-mono text-[11px] font-bold">⚡ 사이버 네온</span>
             </div>
@@ -318,13 +325,13 @@
               id="downloadSquareBtn"
               class="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-3 px-3 rounded-xl text-xs sm:text-sm transition duration-200 shadow-md shadow-pink-500/20 flex items-center justify-center space-x-1.5 cursor-pointer"
             >
-              <span>🖼️ 1:1 피드 카드 저장</span>
+              <span id="downloadSquareText">🖼️ 1:1 피드 카드 저장</span>
             </button>
             <button
               id="downloadStoryBtn"
               class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3 px-3 rounded-xl text-xs sm:text-sm transition duration-200 shadow-md shadow-purple-500/20 flex items-center justify-center space-x-1.5 cursor-pointer"
             >
-              <span>📱 9:16 스토리 저장</span>
+              <span id="downloadStoryText">📱 9:16 스토리 저장</span>
             </button>
           </div>
 
@@ -334,13 +341,13 @@
               id="shareBtn"
               class="bg-gray-800 hover:bg-gray-700 text-gray-200 font-bold py-3 px-3 rounded-xl text-xs sm:text-sm transition duration-200 border border-gray-700 flex items-center justify-center space-x-1.5 cursor-pointer"
             >
-              <span>🔗 판결 링크 복사</span>
+              <span id="shareBtnText">🔗 판결 링크 복사</span>
             </button>
             <button
               id="resetBtn"
               class="bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold py-3 px-3 rounded-xl text-xs sm:text-sm transition duration-200 shadow-md shadow-cyan-500/20 flex items-center justify-center space-x-1.5 cursor-pointer"
             >
-              <span>🔄 다른 고민 판결받기</span>
+              <span id="resetBtnText">🔄 다른 고민 판결받기</span>
             </button>
           </div>
         </div>
@@ -350,7 +357,7 @@
     <!-- [4] RECENT HISTORY MINI PREVIEW -->
     <div id="historySection" class="hidden mt-10 pt-8 border-t border-gray-800/80 space-y-3">
       <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center justify-between">
-        <span>최근 내 판결</span>
+        <span id="recentHistoryTitle">최근 내 판결</span>
         <button id="viewAllHistoryBtn" class="text-cyan-400 hover:underline cursor-pointer text-xs font-bold">
           전체 보기 (보관함) →
         </button>
@@ -366,9 +373,9 @@
       <div class="flex items-center justify-between border-b border-gray-800 pb-4">
         <div>
           <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-            <span>🗂️ 내 판결 보관함</span>
+            <span id="modalTitle">🗂️ 내 판결 보관함</span>
           </h3>
-          <p class="text-xs text-gray-400 mt-0.5">내 브라우저 LocalStorage에 안전하게 보관된 판결 목록</p>
+          <p id="modalSubtitle" class="text-xs text-gray-400 mt-0.5">내 브라우저 LocalStorage에 안전하게 보관된 판결 목록</p>
         </div>
         <button id="closeHistoryModalBtn" class="text-gray-400 hover:text-white text-xl font-mono cursor-pointer p-1">
           ✕
@@ -377,11 +384,11 @@
 
       <!-- Modal Category Filter -->
       <div class="flex items-center space-x-1.5 py-3 border-b border-gray-800/60 overflow-x-auto text-xs">
-        <button class="modal-cat-filter px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-400 font-bold border border-cyan-800" data-cat="all">전체</button>
-        <button class="modal-cat-filter px-2.5 py-1 rounded-lg bg-gray-950 text-gray-400 border border-gray-800" data-cat="shopping">지름신</button>
-        <button class="modal-cat-filter px-2.5 py-1 rounded-lg bg-gray-950 text-gray-400 border border-gray-800" data-cat="career">커리어</button>
-        <button class="modal-cat-filter px-2.5 py-1 rounded-lg bg-gray-950 text-gray-400 border border-gray-800" data-cat="love">연애</button>
-        <button class="modal-cat-filter px-2.5 py-1 rounded-lg bg-gray-950 text-gray-400 border border-gray-800" data-cat="daily">일상</button>
+        <button class="modal-cat-filter px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-400 font-bold border border-cyan-800" data-cat="all" data-i18n="cat_all">전체</button>
+        <button class="modal-cat-filter px-2.5 py-1 rounded-lg bg-gray-950 text-gray-400 border border-gray-800" data-cat="shopping" data-i18n="cat_shopping">지름신</button>
+        <button class="modal-cat-filter px-2.5 py-1 rounded-lg bg-gray-950 text-gray-400 border border-gray-800" data-cat="career" data-i18n="cat_career">커리어</button>
+        <button class="modal-cat-filter px-2.5 py-1 rounded-lg bg-gray-950 text-gray-400 border border-gray-800" data-cat="love" data-i18n="cat_love">연애</button>
+        <button class="modal-cat-filter px-2.5 py-1 rounded-lg bg-gray-950 text-gray-400 border border-gray-800" data-cat="daily" data-i18n="cat_daily">일상</button>
       </div>
 
       <!-- Modal Cards List -->
