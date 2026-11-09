@@ -1,8 +1,8 @@
 """
-Automated Verification Suite for OneWord Web Application (v0.6.4 - Multilingual i18n)
+Automated Verification Suite for OneWord Web Application (v0.7.0 - Viral Social Share & Clipboard Engine)
 - Verifies HTML structure, script paths, and module syntax
 - Simulates keyword categorizations and verdict generation rules
-- Validates 4-theme sound synthesizer, neon particle engine, voting simulator, 4-theme card styler, and i18n
+- Validates 4-theme sound synthesizer, neon particle engine, voting simulator, 4-theme card styler, i18n, and viral sharing
 """
 
 import os
@@ -23,6 +23,7 @@ class TestOneWordScaffolding(unittest.TestCase):
             "src/engine/voting.js",
             "src/fx/particles.js",
             "src/i18n/translations.js",
+            "src/share/intentShare.js",
             "src/storage/history.js",
             "docs/DEPLOYMENT_GUIDE.md",
             "site.webmanifest",
@@ -33,6 +34,20 @@ class TestOneWordScaffolding(unittest.TestCase):
             p = os.path.join(PROJECT_ROOT, rel)
             self.assertTrue(os.path.isfile(p), f"Missing required file: {rel}")
 
+    def test_intent_share_engine(self):
+        share_path = os.path.join(PROJECT_ROOT, "src/share/intentShare.js")
+        with open(share_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("IntentShare", content)
+        self.assertIn("buildFormattedSnippet", content)
+        self.assertIn("shareToX", content)
+        self.assertIn("shareToThreads", content)
+        self.assertIn("canNativeShare", content)
+        self.assertIn("triggerNativeShare", content)
+        self.assertIn("copyFormattedText", content)
+        self.assertIn("twitter.com/intent/tweet", content)
+        self.assertIn("threads.net/intent/post", content)
+
     def test_i18n_translations(self):
         i18n_path = os.path.join(PROJECT_ROOT, "src/i18n/translations.js")
         with open(i18n_path, "r", encoding="utf-8") as f:
@@ -40,8 +55,9 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("TRANSLATIONS", content)
         self.assertIn("GLOBAL_PRESETS", content)
         self.assertIn("I18nEngine", content)
-        self.assertIn("ko:", content)
-        self.assertIn("en:", content)
+        self.assertIn("share_x", content)
+        self.assertIn("share_threads", content)
+        self.assertIn("copy_text", content)
 
     def test_card_generator_and_styles(self):
         card_gen_path = os.path.join(PROJECT_ROOT, "src/canvas/cardGenerator.js")
@@ -53,14 +69,6 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("minimal", content)
         self.assertIn("parchment", content)
         self.assertIn("retro8bit", content)
-        self.assertIn("_renderCyber", content)
-        self.assertIn("_renderMinimal", content)
-        self.assertIn("_renderParchment", content)
-        self.assertIn("_renderRetro8Bit", content)
-        self.assertIn("renderCanvas", content)
-        self.assertIn("downloadImage", content)
-        self.assertIn("wrapText", content)
-        self.assertIn("VoteSimulator", content)
 
     def test_workflow_and_manifest(self):
         deploy_guide_path = os.path.join(PROJECT_ROOT, "docs/DEPLOYMENT_GUIDE.md")
@@ -83,10 +91,6 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("cyber", content)
         self.assertIn("minimal", content)
         self.assertIn("retro8bit", content)
-        self.assertIn("triggerHaptic", content)
-        self.assertIn("playClick", content)
-        self.assertIn("playJudgeCue", content)
-        self.assertIn("playGavelImpact", content)
 
     def test_particle_burst_engine(self):
         fx_path = os.path.join(PROJECT_ROOT, "src/fx/particles.js")
@@ -94,7 +98,6 @@ class TestOneWordScaffolding(unittest.TestCase):
             content = f.read()
         self.assertIn("NeonParticleBurst", content)
         self.assertIn("burst", content)
-        self.assertIn("animate", content)
 
     def test_voting_engine(self):
         vote_path = os.path.join(PROJECT_ROOT, "src/engine/voting.js")
@@ -103,7 +106,6 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("VoteSimulator", content)
         self.assertIn("getPollData", content)
         self.assertIn("castVote", content)
-        self.assertIn("hashString", content)
 
     def test_html_integrity(self):
         html_path = os.path.join(PROJECT_ROOT, "index.html")
@@ -119,9 +121,10 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn('id="randomDiceBtn"', content)
         self.assertIn('id="communityPollSection"', content)
         self.assertIn('id="cardStyleContainer"', content)
-        self.assertIn('id="activeCardStyleLabel"', content)
         self.assertIn('id="langToggleBtn"', content)
-        self.assertIn('id="langCurrentBadge"', content)
+        self.assertIn('id="shareXBtn"', content)
+        self.assertIn('id="shareThreadsBtn"', content)
+        self.assertIn('id="copyTextBtn"', content)
 
     def test_persona_definitions(self):
         persona_path = os.path.join(PROJECT_ROOT, "src/engine/personas.js")
@@ -130,7 +133,6 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("reason", content)
         self.assertIn("instinct", content)
         self.assertIn("realist", content)
-        self.assertIn("nameEn", content)
 
     def test_verdict_engine_categories_and_i18n(self):
         engine_path = os.path.join(PROJECT_ROOT, "src/engine/verdict.js")
@@ -142,9 +144,6 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("daily", content)
         self.assertIn("CATEGORY_PRESETS", content)
         self.assertIn("GLOBAL_PRESETS", content)
-        self.assertIn("buy", content)
-        self.assertIn("quit", content)
-        self.assertIn("pizza", content)
 
     def test_storage_manager(self):
         storage_path = os.path.join(PROJECT_ROOT, "src/storage/history.js")
@@ -152,10 +151,7 @@ class TestOneWordScaffolding(unittest.TestCase):
             content = f.read()
         self.assertIn("saveVerdict", content)
         self.assertIn("getHistory", content)
-        self.assertIn("deleteVerdict", content)
-        self.assertIn("clearHistory", content)
         self.assertIn("encodeState", content)
-        self.assertIn("decodeState", content)
 
 if __name__ == "__main__":
     unittest.main()

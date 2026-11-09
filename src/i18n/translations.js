@@ -1,5 +1,5 @@
 /**
- * OneWord: Multilingual i18n & Global Presets Engine (v0.6.4)
+ * OneWord: Multilingual i18n & Global Presets Engine (v0.7.0)
  * 한국어 / 영어 원클릭 실시간 토글 지원 (외부 의존성 제로)
  */
 
@@ -28,6 +28,11 @@ export const TRANSLATIONS = {
     save_story: "📱 9:16 스토리 저장",
     copy_link: "🔗 판결 링크 복사",
     copied_link: "링크 복사 완료! 🎉",
+    share_x: "𝕏 공유",
+    share_threads: "🧵 스레드 공유",
+    copy_text: "📋 텍스트 복사",
+    copied_text: "판결문 복사 완료! 📋",
+    native_share: "📱 시스템 공유",
     reset_btn: "🔄 다른 고민 판결받기",
     recent_history: "최근 내 판결",
     view_all_history: "전체 보기 (보관함) →",
@@ -66,6 +71,11 @@ export const TRANSLATIONS = {
     save_story: "📱 Save 9:16 Story",
     copy_link: "🔗 Copy Verdict Link",
     copied_link: "Link Copied! 🎉",
+    share_x: "𝕏 Post",
+    share_threads: "🧵 Threads",
+    copy_text: "📋 Copy Text",
+    copied_text: "Verdict Copied! 📋",
+    native_share: "📱 System Share",
     reset_btn: "🔄 Judge Another Dilemma",
     recent_history: "Recent Verdicts",
     view_all_history: "View All (Archive) →",

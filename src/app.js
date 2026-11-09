@@ -1,5 +1,5 @@
 /**
- * OneWord: Main Application Controller (v0.6.4 - Sound Themes, Particles, Gestures, Poll, Card Styler & i18n)
+ * OneWord: Main Application Controller (v0.7.0 - Sound Themes, Particles, Gestures, Poll, Card Styler, i18n & Viral SNS Share)
  */
 
 import { VerdictEngine } from "./engine/verdict.js";
@@ -9,6 +9,7 @@ import { CardGenerator, CARD_STYLES } from "./canvas/cardGenerator.js";
 import { NeonParticleBurst } from "./fx/particles.js";
 import { VoteSimulator } from "./engine/voting.js";
 import { i18n } from "./i18n/translations.js";
+import { IntentShare } from "./share/intentShare.js";
 
 const engine = new VerdictEngine();
 const particleBurst = new NeonParticleBurst("fxCanvas");
@@ -71,6 +72,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetBtn = document.getElementById("resetBtn");
   const downloadSquareBtn = document.getElementById("downloadSquareBtn");
   const downloadStoryBtn = document.getElementById("downloadStoryBtn");
+
+  // 바이럴 SNS 공유 버튼 엘리먼트
+  const shareXBtn = document.getElementById("shareXBtn");
+  const shareXText = document.getElementById("shareXText");
+  const shareThreadsBtn = document.getElementById("shareThreadsBtn");
+  const shareThreadsText = document.getElementById("shareThreadsText");
+  const copyTextBtn = document.getElementById("copyTextBtn");
+  const copyTextLabel = document.getElementById("copyTextLabel");
 
   const historyList = document.getElementById("historyList");
   const historySection = document.getElementById("historySection");
@@ -153,6 +162,9 @@ document.addEventListener("DOMContentLoaded", () => {
       ["cardStyleTitle", "card_style_label"],
       ["downloadSquareText", "save_square"],
       ["downloadStoryText", "save_story"],
+      ["shareXText", "share_x"],
+      ["shareThreadsText", "share_threads"],
+      ["copyTextLabel", "copy_text"],
       ["shareBtnText", "copy_link"],
       ["resetBtnText", "reset_btn"],
       ["recentHistoryTitle", "recent_history"],
@@ -443,6 +455,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 𝕏 (트위터) 공유
+  if (shareXBtn) {
+    shareXBtn.addEventListener("click", () => {
+      sound.playClick();
+      sound.triggerHaptic([30]);
+      if (!window.currentVerdict) return;
+      IntentShare.shareToX(window.currentVerdict, i18n.getLanguage());
+    });
+  }
+
+  // 🧵 스레드 공유
+  if (shareThreadsBtn) {
+    shareThreadsBtn.addEventListener("click", () => {
+      sound.playClick();
+      sound.triggerHaptic([30]);
+      if (!window.currentVerdict) return;
+      IntentShare.shareToThreads(window.currentVerdict, i18n.getLanguage());
+    });
+  }
+
+  // 📋 판결문 텍스트 클립보드 복사
+  if (copyTextBtn) {
+    copyTextBtn.addEventListener("click", async () => {
+      sound.playClick();
+      sound.triggerHaptic([40]);
+      if (!window.currentVerdict) return;
+      const ok = await IntentShare.copyFormattedText(window.currentVerdict, i18n.getLanguage());
+      if (ok) {
+        const origText = copyTextLabel.textContent;
+        copyTextLabel.textContent = i18n.t("copied_text");
+        copyTextBtn.classList.add("text-emerald-400", "border-emerald-600");
+        setTimeout(() => {
+          copyTextLabel.textContent = origText;
+          copyTextBtn.classList.remove("text-emerald-400", "border-emerald-600");
+        }, 2200);
+      }
+    });
+  }
+
   // 제출 이벤트
   submitBtn.addEventListener("click", () => {
     sound.init();
@@ -470,8 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
   shareBtn.addEventListener("click", () => {
     sound.playClick();
     if (!window.currentVerdict) return;
-    const hash = StorageManager.encodeState(window.currentVerdict);
-    const shareUrl = `${window.location.origin}${window.location.pathname}#${hash}`;
+    const shareUrl = IntentShare.getShareUrl(window.currentVerdict);
 
     navigator.clipboard.writeText(shareUrl).then(() => {
       const originalText = shareBtn.innerHTML;
