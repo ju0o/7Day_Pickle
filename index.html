@@ -62,14 +62,6 @@
     .shake-screen {
       animation: screen-shake 0.45s ease-in-out;
     }
-    /* 스와이프 제스처 힌트 애니메이션 */
-    @keyframes swipe-hint {
-      0%, 100% { transform: translateX(0); opacity: 0.6; }
-      50% { transform: translateX(6px); opacity: 1; }
-    }
-    .swipe-indicator {
-      animation: swipe-hint 1.8s infinite;
-    }
   </style>
 </head>
 <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
@@ -255,6 +247,42 @@
           <p id="punchline" class="text-sm sm:text-base text-gray-300 font-medium italic">
             "내일 아침 거울 속 네 얼굴을 먼저 상상해라."
           </p>
+        </div>
+
+        <!-- [POLL] 시민 배심원단 여론 투표 섹션 (신규) -->
+        <div id="communityPollSection" class="p-4 bg-gray-950/90 rounded-xl border border-gray-800 space-y-3 text-left">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-gray-300 flex items-center space-x-1.5">
+              <span>👥 시민 배심원단 투표</span>
+              <span id="userVotedBadge" class="hidden px-1.5 py-0.2 rounded text-[10px] font-bold bg-cyan-950 text-cyan-400 border border-cyan-800">투표완료</span>
+            </span>
+            <span id="pollParticipantCount" class="text-gray-500 font-mono">총 1,842명 참여</span>
+          </div>
+
+          <!-- 투표 전: 찬반 선택 버튼 -->
+          <div id="pollActionButtons" class="grid grid-cols-2 gap-2">
+            <button id="pollAgreeBtn" class="py-2.5 px-3 rounded-xl bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-800/80 text-emerald-300 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-1.5 cursor-pointer active:scale-95 shadow-sm">
+              <span>👍 완전 인정</span>
+            </button>
+            <button id="pollDisagreeBtn" class="py-2.5 px-3 rounded-xl bg-rose-950/70 hover:bg-rose-900 border border-rose-800/80 text-rose-300 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-1.5 cursor-pointer active:scale-95 shadow-sm">
+              <span>👎 결사 반대</span>
+            </button>
+          </div>
+
+          <!-- 투표 후/실시간: 네온 프로그레스 게이지 바 -->
+          <div id="pollGaugeContainer" class="space-y-2 pt-1">
+            <div class="w-full bg-gray-900 rounded-full h-3 overflow-hidden flex border border-gray-800 p-0.5">
+              <div id="pollAgreeBar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-700 ease-out" style="width: 75%;"></div>
+              <div id="pollDisagreeBar" class="bg-gradient-to-r from-rose-500 to-pink-500 h-full rounded-full transition-all duration-700 ease-out" style="width: 25%;"></div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] font-mono">
+              <span id="pollAgreeText" class="text-emerald-400 font-bold">인정 75%</span>
+              <span id="pollDisagreeText" class="text-rose-400 font-bold">반대 25%</span>
+            </div>
+            <div id="pollConsensusText" class="text-center text-xs text-gray-400 italic pt-0.5">
+              "배심원 75%가 찬성표를 던졌습니다."
+            </div>
+          </div>
         </div>
 
         <!-- Action Buttons -->

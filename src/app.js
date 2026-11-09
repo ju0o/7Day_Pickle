@@ -1,5 +1,5 @@
 /**
- * OneWord: Main Application Controller (v0.6 - Sound Themes, Particles & Gestures)
+ * OneWord: Main Application Controller (v0.6 - Sound Themes, Particles, Gestures & Community Poll)
  */
 
 import { VerdictEngine, CATEGORY_PRESETS } from "./engine/verdict.js";
@@ -7,6 +7,7 @@ import { StorageManager } from "./storage/history.js";
 import { sound, SOUND_THEMES } from "./audio/sound.js";
 import { CardGenerator } from "./canvas/cardGenerator.js";
 import { NeonParticleBurst } from "./fx/particles.js";
+import { VoteSimulator } from "./engine/voting.js";
 
 const engine = new VerdictEngine();
 const particleBurst = new NeonParticleBurst("fxCanvas");
@@ -73,6 +74,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const historyList = document.getElementById("historyList");
   const historySection = document.getElementById("historySection");
   const historyCountBadge = document.getElementById("historyCountBadge");
+
+  // 시민 배심원 투표 엘리먼트
+  const userVotedBadge = document.getElementById("userVotedBadge");
+  const pollParticipantCount = document.getElementById("pollParticipantCount");
+  const pollAgreeBtn = document.getElementById("pollAgreeBtn");
+  const pollDisagreeBtn = document.getElementById("pollDisagreeBtn");
+  const pollAgreeBar = document.getElementById("pollAgreeBar");
+  const pollDisagreeBar = document.getElementById("pollDisagreeBar");
+  const pollAgreeText = document.getElementById("pollAgreeText");
+  const pollDisagreeText = document.getElementById("pollDisagreeText");
+  const pollConsensusText = document.getElementById("pollConsensusText");
 
   // 사운드 테마 드롭다운 엘리먼트
   const soundThemeBtn = document.getElementById("soundThemeBtn");
@@ -242,17 +254,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const diffX = e.changedTouches[0].screenX - touchStartX;
     const diffY = e.changedTouches[0].screenY - touchStartY;
 
-    // 수평 스와이프 판정 (수평 이동 > 60px, 수직 이동 < 45px)
     if (Math.abs(diffX) > 60 && Math.abs(diffY) < 45) {
       const curIdx = CATEGORIES_ORDER.indexOf(currentCategory);
       if (diffX < 0) {
-        // 왼쪽 스와이프 (다음 카테고리)
         const nextIdx = (curIdx + 1) % CATEGORIES_ORDER.length;
         switchCategory(CATEGORIES_ORDER[nextIdx]);
         sound.playClick();
         sound.triggerHaptic([20]);
       } else {
-        // 오른쪽 스와이프 (이전 카테고리)
         const prevIdx = (curIdx - 1 + CATEGORIES_ORDER.length) % CATEGORIES_ORDER.length;
         switchCategory(CATEGORIES_ORDER[prevIdx]);
         sound.playClick();
@@ -260,6 +269,68 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }, { passive: true });
+
+  // 시민 배심원 투표 렌더러
+  function renderPoll(verdict) {
+    const poll = VoteSimulator.getPollData(verdict);
+    if (!poll) return;
+
+    verdict.poll = poll;
+
+    if (pollParticipantCount) {
+      pollParticipantCount.textContent = `총 ${poll.totalVotes.toLocaleString()}명 참여`;
+    }
+
+    if (pollAgreeBar && pollDisagreeBar) {
+      pollAgreeBar.style.width = `${poll.agreePercent}%`;
+      pollDisagreeBar.style.width = `${poll.disagreePercent}%`;
+    }
+
+    if (pollAgreeText && pollDisagreeText) {
+      pollAgreeText.textContent = `인정 ${poll.agreePercent}% (${poll.agreeVotes.toLocaleString()}표)`;
+      pollDisagreeText.textContent = `반대 ${poll.disagreePercent}% (${poll.disagreeVotes.toLocaleString()}표)`;
+    }
+
+    if (pollConsensusText) {
+      pollConsensusText.textContent = `"${poll.consensusText}"`;
+    }
+
+    if (userVotedBadge) {
+      if (poll.userVote) {
+        userVotedBadge.classList.remove("hidden");
+        userVotedBadge.textContent = poll.userVote === "agree" ? "👍 인정 투표완료" : "👎 반대 투표완료";
+      } else {
+        userVotedBadge.classList.add("hidden");
+      }
+    }
+
+    if (pollAgreeBtn && pollDisagreeBtn) {
+      pollAgreeBtn.classList.toggle("ring-2", poll.userVote === "agree");
+      pollAgreeBtn.classList.toggle("ring-emerald-400", poll.userVote === "agree");
+      pollDisagreeBtn.classList.toggle("ring-2", poll.userVote === "disagree");
+      pollDisagreeBtn.classList.toggle("ring-rose-400", poll.userVote === "disagree");
+    }
+  }
+
+  if (pollAgreeBtn) {
+    pollAgreeBtn.addEventListener("click", () => {
+      sound.playClick();
+      sound.triggerHaptic([30, 60]);
+      if (!window.currentVerdict) return;
+      const updated = VoteSimulator.castVote(window.currentVerdict, "agree");
+      renderPoll(window.currentVerdict);
+    });
+  }
+
+  if (pollDisagreeBtn) {
+    pollDisagreeBtn.addEventListener("click", () => {
+      sound.playClick();
+      sound.triggerHaptic([30, 60]);
+      if (!window.currentVerdict) return;
+      const updated = VoteSimulator.castVote(window.currentVerdict, "disagree");
+      renderPoll(window.currentVerdict);
+    });
+  }
 
   // 제출 이벤트
   submitBtn.addEventListener("click", () => {
@@ -466,6 +537,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height * 0.4;
     particleBurst.burst(centerX, centerY, theme.colorHex, 50);
+
+    // 시민 배심원 투표 렌더링
+    renderPoll(verdict);
 
     renderHistory();
   }

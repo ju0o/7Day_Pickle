@@ -1,7 +1,10 @@
 /**
  * OneWord: HTML5 Canvas 기반 고해상도 SNS 판결 카드 이미지 렌더러
  * 인스타그램, 스레드, X 규격의 1080px 고화질 PNG 이미지를 클라이언트에서 1초 만에 생성
+ * v0.6: 시민 배심원단 여론 지지율 스탬프 각인 지원
  */
+
+import { VoteSimulator } from "../engine/voting.js";
 
 const THEME_COLORS = {
   shopping: { primary: "#ffb703", secondary: "#fb8500", glow: "rgba(255, 183, 3, 0.6)" },
@@ -22,6 +25,7 @@ export class CardGenerator {
     const ctx = canvas.getContext("2d");
 
     const theme = THEME_COLORS[verdict.category] || THEME_COLORS.daily;
+    const poll = verdict.poll || VoteSimulator.getPollData(verdict);
 
     // 1. 딥 다크 배경 그라데이션
     const bgGrad = ctx.createLinearGradient(0, 0, width, height);
@@ -71,7 +75,7 @@ export class CardGenerator {
     ctx.fillRect(margin + frameW - cornerSize + 2, margin + frameH - cornerSize + 2, cornerSize, cornerSize);
 
     // 4. 헤더: ONE WORD LAB · THE FINAL VERDICT
-    const startY = isStory ? 240 : 140;
+    const startY = isStory ? 240 : 130;
     ctx.textAlign = "center";
     ctx.fillStyle = "#8892b0";
     ctx.font = "bold 24px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
@@ -96,7 +100,7 @@ export class CardGenerator {
     ctx.restore();
 
     // 5. 질문 텍스트 (줄바꿈 처리)
-    const questionY = startY + (isStory ? 190 : 130);
+    const questionY = startY + (isStory ? 180 : 120);
     ctx.fillStyle = "#ccd6f6";
     ctx.font = "bold 32px -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif";
     ctx.letterSpacing = "0px";
@@ -106,7 +110,7 @@ export class CardGenerator {
     });
 
     // 6. 거대한 ONE WORD 판결문 (중앙 하이라이트)
-    const wordCenterY = isStory ? 880 : 540;
+    const wordCenterY = isStory ? 840 : 510;
 
     // 네온 글로우 텍스트
     ctx.save();
@@ -124,9 +128,9 @@ export class CardGenerator {
     ctx.fillText(verdict.verdict_kr, width / 2, wordCenterY + 70);
 
     // 7. 촌철살인 펀치라인 박스
-    const punchY = isStory ? 1220 : 710;
+    const punchY = isStory ? 1160 : 670;
     const punchW = frameW - 100;
-    const punchH = isStory ? 200 : 140;
+    const punchH = isStory ? 180 : 130;
 
     ctx.save();
     ctx.fillStyle = "rgba(10, 14, 24, 0.85)";
@@ -145,9 +149,29 @@ export class CardGenerator {
     });
     ctx.restore();
 
-    // 8. 심판관 한 줄 총평 요약 (스토리 모드 전용)
+    // 8. 시민 배심원 여론 지지율 스탬프 뱃지 (신규)
+    if (poll) {
+      const pollBadgeY = isStory ? 1390 : 830;
+      const pollBadgeW = 440;
+      const pollBadgeH = 50;
+
+      ctx.save();
+      ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
+      ctx.strokeStyle = poll.agreePercent >= 60 ? "#10b981" : "#f43f5e";
+      ctx.lineWidth = 2;
+      this.roundRect(ctx, width / 2 - pollBadgeW / 2, pollBadgeY, pollBadgeW, pollBadgeH, 14);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = poll.agreePercent >= 60 ? "#34d399" : "#fb7185";
+      ctx.font = "bold 20px -apple-system, BlinkMacSystemFont, 'Pretendard', sans-serif";
+      ctx.fillText(`👥 시민 배심원 ${poll.agreePercent}% 인정 (${poll.totalVotes.toLocaleString()}명 투표)`, width / 2, pollBadgeY + 32);
+      ctx.restore();
+    }
+
+    // 9. 심판관 한 줄 총평 요약 (스토리 모드 전용)
     if (isStory && verdict.opinions) {
-      const opinionsY = 1490;
+      const opinionsY = 1520;
       ctx.fillStyle = "#64748b";
       ctx.font = "bold 20px monospace";
       ctx.letterSpacing = "2px";
@@ -168,7 +192,7 @@ export class CardGenerator {
       ctx.textAlign = "center";
     }
 
-    // 9. 푸터 워터마크 및 판결 일시
+    // 10. 푸터 워터마크 및 판결 일시
     const footerY = isStory ? 1800 : 990;
     ctx.fillStyle = "#64748b";
     ctx.font = "18px monospace";
@@ -188,7 +212,7 @@ export class CardGenerator {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
     ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.quadraticCurveTo(x + width, y + width, x + width, y + radius);
     ctx.lineTo(x + width, y + height - radius);
     ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
     ctx.lineTo(x + radius, y + height);
