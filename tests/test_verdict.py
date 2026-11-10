@@ -15,6 +15,7 @@ class TestOneWordScaffolding(unittest.TestCase):
     def test_file_structure(self):
         required_files = [
             "index.html",
+            "sw.js",
             "src/app.js",
             "src/audio/sound.js",
             "src/canvas/cardGenerator.js",
@@ -23,6 +24,7 @@ class TestOneWordScaffolding(unittest.TestCase):
             "src/engine/voting.js",
             "src/fx/particles.js",
             "src/i18n/translations.js",
+            "src/pwa/installPrompt.js",
             "src/share/intentShare.js",
             "src/storage/history.js",
             "docs/DEPLOYMENT_GUIDE.md",
@@ -125,6 +127,11 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn('id="shareXBtn"', content)
         self.assertIn('id="shareThreadsBtn"', content)
         self.assertIn('id="copyTextBtn"', content)
+        self.assertIn('id="pwaInstallBtn"', content)
+        self.assertIn('id="offlineBadge"', content)
+        self.assertIn('id="installModal"', content)
+        self.assertIn('apple-mobile-web-app-capable', content)
+        self.assertIn('apple-touch-icon', content)
 
     def test_persona_definitions(self):
         persona_path = os.path.join(PROJECT_ROOT, "src/engine/personas.js")
@@ -152,6 +159,32 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("saveVerdict", content)
         self.assertIn("getHistory", content)
         self.assertIn("encodeState", content)
+
+    def test_service_worker_and_pwa_engine(self):
+        sw_path = os.path.join(PROJECT_ROOT, "sw.js")
+        with open(sw_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("CACHE_NAME", content)
+        self.assertIn("PRECACHE_ASSETS", content)
+        self.assertIn("install", content)
+        self.assertIn("activate", content)
+        self.assertIn("fetch", content)
+
+        pwa_path = os.path.join(PROJECT_ROOT, "src/pwa/installPrompt.js")
+        with open(pwa_path, "r", encoding="utf-8") as f:
+            pwa_content = f.read()
+        self.assertIn("InstallPromptManager", pwa_content)
+        self.assertIn("beforeinstallprompt", pwa_content)
+        self.assertIn("isStandalone", pwa_content)
+        self.assertIn("registerServiceWorker", pwa_content)
+        self.assertIn("checkIos", pwa_content)
+
+        i18n_path = os.path.join(PROJECT_ROOT, "src/i18n/translations.js")
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            i18n_content = f.read()
+        self.assertIn("pwa_install_btn", i18n_content)
+        self.assertIn("pwa_modal_title", i18n_content)
+        self.assertIn("pwa_ios_title", i18n_content)
 
 if __name__ == "__main__":
     unittest.main()

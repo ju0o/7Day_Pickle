@@ -9,6 +9,12 @@
   <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
   <link rel="manifest" href="site.webmanifest">
 
+  <!-- iOS PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OneWord">
+  <link rel="apple-touch-icon" href="assets/icon.svg">
+
   <!-- Open Graph / Facebook / KakaoTalk -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="OneWord — 3초 의사결정 심판소">
@@ -80,6 +86,16 @@
         <span class="text-xs bg-gray-800 text-cyan-400 px-2 py-0.5 rounded-full font-mono border border-gray-700">LAB</span>
       </div>
       <div class="flex items-center space-x-2">
+        <!-- 오프라인 모드 상태 뱃지 (평소 숨김) -->
+        <span id="offlineBadge" class="hidden px-2 py-1 rounded-full text-[10px] font-mono bg-pink-950 text-pink-400 border border-pink-800 animate-pulse">
+          ⚡ 오프라인 가동
+        </span>
+
+        <!-- PWA 네이티브 앱 설치 버튼 -->
+        <button id="pwaInstallBtn" class="text-xs font-mono font-bold px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-cyan-950 to-blue-950 border border-cyan-800 text-cyan-300 hover:text-white hover:border-cyan-400 transition cursor-pointer flex items-center space-x-1 shadow-sm">
+          <span id="pwaInstallLabel">📲 앱 설치</span>
+        </button>
+
         <!-- 다국어 토글 버튼 (KR / EN) -->
         <button id="langToggleBtn" class="text-xs font-mono font-bold px-2 py-1.5 rounded-lg bg-gray-900 border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition cursor-pointer flex items-center space-x-1">
           <span id="langCurrentBadge" class="text-cyan-400">KR</span>
@@ -425,6 +441,66 @@
           🗑️ 전체 기록 비우기
         </button>
         <span class="text-gray-500 font-mono">ONE WORD LAB</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PWA 홈 화면 설치 모달 / 안내 시트 -->
+  <div id="installModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div id="installModalBackdrop" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+    <div class="relative bg-gray-900 border border-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl z-10 space-y-4">
+      <div class="flex items-start justify-between border-b border-gray-800 pb-3">
+        <div class="space-y-1">
+          <h3 id="pwaModalTitle" class="text-base font-bold text-white flex items-center space-x-2">
+            <span>📱 OneWord 앱 설치하기</span>
+          </h3>
+          <p id="pwaModalDesc" class="text-xs text-gray-400">
+            홈 화면에 앱으로 추가하면 인터넷 데이터 없이도 언제 어디서나 3초 만에 판결을 받을 수 있습니다.
+          </p>
+        </div>
+        <button id="closeInstallModalBtn" class="text-gray-400 hover:text-white text-xl font-mono cursor-pointer p-1">
+          ✕
+        </button>
+      </div>
+
+      <!-- iOS Safari 전용 3단계 시각 가이드 -->
+      <div id="installIosBox" class="space-y-3 bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-xs">
+        <div class="font-bold text-cyan-400 flex items-center space-x-1.5" id="pwaIosTitle">
+          <span>🍎 iOS 사파리(Safari) 설치 방법</span>
+        </div>
+        <ol class="space-y-2 text-gray-300">
+          <li class="flex items-start space-x-2">
+            <span class="bg-gray-800 text-cyan-400 font-mono px-1.5 py-0.5 rounded text-[10px] font-bold">1</span>
+            <span id="pwaIosStep1">하단 메뉴바의 <span class="text-cyan-400 font-bold">공유 버튼(⎋)</span>을 터치합니다.</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="bg-gray-800 text-cyan-400 font-mono px-1.5 py-0.5 rounded text-[10px] font-bold">2</span>
+            <span id="pwaIosStep2">메뉴 목록에서 <span class="text-cyan-400 font-bold">'홈 화면에 추가'</span>를 선택합니다.</span>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="bg-gray-800 text-cyan-400 font-mono px-1.5 py-0.5 rounded text-[10px] font-bold">3</span>
+            <span id="pwaIosStep3">우측 상단의 <span class="text-cyan-400 font-bold">'추가'</span>를 누르면 설치 완료!</span>
+          </li>
+        </ol>
+      </div>
+
+      <!-- 안드로이드 / 크롬 네이티브 설치 박스 -->
+      <div id="installAndroidBox" class="space-y-3 bg-gray-950/80 border border-gray-800 rounded-xl p-4 text-xs">
+        <div class="font-bold text-cyan-400 flex items-center space-x-1.5" id="pwaAndroidTitle">
+          <span>🤖 안드로이드 / 크롬 설치</span>
+        </div>
+        <p class="text-gray-300" id="pwaAndroidDesc">
+          브라우저 네이티브 프롬프트를 통해 1초 만에 스마트폰 홈 화면에 바로 설치됩니다.
+        </p>
+        <button id="directInstallAndroidBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-extrabold text-xs transition shadow-lg cursor-pointer">
+          <span id="pwaAndroidBtnText">🚀 홈 화면에 바로 설치하기</span>
+        </button>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button id="closeInstallModalFooterBtn" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs transition cursor-pointer">
+          <span id="pwaModalCloseText">닫기</span>
+        </button>
       </div>
     </div>
   </div>

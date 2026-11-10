@@ -45,7 +45,19 @@ export const TRANSLATIONS = {
     cat_shopping: "🛍️ 지름신",
     cat_career: "💼 커리어",
     cat_love: "💌 연애",
-    cat_daily: "🍜 일상"
+    cat_daily: "🍜 일상",
+    pwa_install_btn: "📲 앱 설치",
+    pwa_offline_badge: "⚡ 오프라인 가동",
+    pwa_modal_title: "📱 OneWord 앱 설치하기",
+    pwa_modal_desc: "홈 화면에 앱으로 추가하면 인터넷 데이터 없이도 언제 어디서나 3초 만에 판결을 받을 수 있습니다.",
+    pwa_ios_title: "🍎 iOS 사파리(Safari) 설치 방법",
+    pwa_ios_step1: "하단 메뉴바의 <span class='text-cyan-400 font-bold'>공유 버튼(⎋)</span>을 터치합니다.",
+    pwa_ios_step2: "메뉴 목록에서 <span class='text-cyan-400 font-bold'>'홈 화면에 추가'</span>를 선택합니다.",
+    pwa_ios_step3: "우측 상단의 <span class='text-cyan-400 font-bold'>'추가'</span>를 누르면 설치 완료!",
+    pwa_android_title: "🤖 안드로이드 / 크롬 설치",
+    pwa_android_desc: "브라우저 네이티브 프롬프트를 통해 1초 만에 스마트폰 홈 화면에 바로 설치됩니다.",
+    pwa_android_btn: "🚀 홈 화면에 바로 설치하기",
+    pwa_modal_close: "닫기"
   },
   en: {
     title: 'Decision fatigue, <span class="text-cyan-400">ended in ONE WORD</span>.',
@@ -88,7 +100,19 @@ export const TRANSLATIONS = {
     cat_shopping: "🛍️ Shopping",
     cat_career: "💼 Career",
     cat_love: "💌 Love",
-    cat_daily: "🍜 Daily"
+    cat_daily: "🍜 Daily",
+    pwa_install_btn: "📲 Install App",
+    pwa_offline_badge: "⚡ Offline Mode",
+    pwa_modal_title: "📱 Install OneWord App",
+    pwa_modal_desc: "Add to your home screen to get instant verdicts anywhere, anytime — even completely offline.",
+    pwa_ios_title: "🍎 iOS Safari Installation Guide",
+    pwa_ios_step1: "Tap the <span class='text-cyan-400 font-bold'>Share button (⎋)</span> on the bottom menu.",
+    pwa_ios_step2: "Select <span class='text-cyan-400 font-bold'>'Add to Home Screen'</span> from the menu.",
+    pwa_ios_step3: "Tap <span class='text-cyan-400 font-bold'>'Add'</span> on the top right to complete!",
+    pwa_android_title: "🤖 Android / Desktop Chrome Install",
+    pwa_android_desc: "Installs directly to your home screen in 1 second via native browser prompt.",
+    pwa_android_btn: "🚀 Install to Home Screen Now",
+    pwa_modal_close: "Close"
   }
 };
 

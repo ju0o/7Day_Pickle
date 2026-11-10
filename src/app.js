@@ -1,5 +1,5 @@
 /**
- * OneWord: Main Application Controller (v0.7.0 - Sound Themes, Particles, Gestures, Poll, Card Styler, i18n & Viral SNS Share)
+ * OneWord: Main Application Controller (v0.8.0 - PWA Offline Caching & Native A2HS Installer Prompt)
  */
 
 import { VerdictEngine } from "./engine/verdict.js";
@@ -8,11 +8,13 @@ import { sound, SOUND_THEMES } from "./audio/sound.js";
 import { CardGenerator, CARD_STYLES } from "./canvas/cardGenerator.js";
 import { NeonParticleBurst } from "./fx/particles.js";
 import { VoteSimulator } from "./engine/voting.js";
-import { i18n } from "./i18n/translations.js";
+import { i18n, TRANSLATIONS } from "./i18n/translations.js";
 import { IntentShare } from "./share/intentShare.js";
+import { InstallPromptManager } from "./pwa/installPrompt.js";
 
 const engine = new VerdictEngine();
 const particleBurst = new NeonParticleBurst("fxCanvas");
+const installManager = new InstallPromptManager();
 
 const THEMES = {
   shopping: {
@@ -125,6 +127,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentCategory = "all";
   let modalFilterCat = "all";
 
+  // PWA A2HS 인스톨 매니저 및 서비스워커 초기화
+  installManager.init();
+
   // 오디오 초기화
   const unlockAudio = () => {
     sound.init();
@@ -200,6 +205,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.currentVerdict) {
       renderPoll(window.currentVerdict);
     }
+
+    // PWA 인스톨 UI 다국어 번역 동기화
+    installManager.setLanguage(curLang, TRANSLATIONS);
   }
 
   // 언어 토글 이벤트
