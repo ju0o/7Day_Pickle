@@ -22,6 +22,7 @@ class TestOneWordScaffolding(unittest.TestCase):
             "src/canvas/cardGenerator.js",
             "src/engine/bias.js",
             "src/engine/personas.js",
+            "src/engine/tags.js",
             "src/engine/verdict.js",
             "src/engine/voting.js",
             "src/fx/particles.js",
@@ -139,6 +140,9 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn('id="biasModal"', content)
         self.assertIn('id="biasSlider"', content)
         self.assertIn('id="verdictBiasBadge"', content)
+        self.assertIn('id="trendingTagsList"', content)
+        self.assertIn('id="verdictTagsSection"', content)
+        self.assertIn('id="verdictTagsList"', content)
         self.assertIn('apple-mobile-web-app-capable', content)
         self.assertIn('apple-touch-icon', content)
 
@@ -237,6 +241,32 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("bias_modal_title", i18n_content)
         self.assertIn("bias_balanced_name", i18n_content)
         self.assertIn("bias_vibe_name", i18n_content)
+
+    def test_tag_engine_and_hashtags(self):
+        tags_path = os.path.join(PROJECT_ROOT, "src/engine/tags.js")
+        with open(tags_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("TagEngine", content)
+        self.assertIn("POPULAR_TAGS", content)
+        self.assertIn("generateTags", content)
+        self.assertIn("formatTagString", content)
+        self.assertIn("#OneWord", content)
+
+        verdict_path = os.path.join(PROJECT_ROOT, "src/engine/verdict.js")
+        with open(verdict_path, "r", encoding="utf-8") as f:
+            v_content = f.read()
+        self.assertIn("TagEngine.generateTags", v_content)
+
+        share_path = os.path.join(PROJECT_ROOT, "src/share/intentShare.js")
+        with open(share_path, "r", encoding="utf-8") as f:
+            s_content = f.read()
+        self.assertIn("TagEngine.formatTagString", s_content)
+
+        i18n_path = os.path.join(PROJECT_ROOT, "src/i18n/translations.js")
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            i_content = f.read()
+        self.assertIn("trending_tags_label", i_content)
+        self.assertIn("tags_heading", i_content)
 
 if __name__ == "__main__":
     unittest.main()

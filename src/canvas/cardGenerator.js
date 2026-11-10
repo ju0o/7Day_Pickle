@@ -212,6 +212,12 @@ export class CardGenerator {
     }
 
     const footerY = isStory ? 1800 : 990;
+    if (verdict.tags && verdict.tags.length) {
+      ctx.fillStyle = "#64748b";
+      ctx.font = "bold 18px monospace";
+      ctx.letterSpacing = "1px";
+      ctx.fillText(verdict.tags.slice(0, 4).join("  "), width / 2, footerY - 32);
+    }
     ctx.fillStyle = "#64748b";
     ctx.font = "18px monospace";
     ctx.letterSpacing = "2px";
@@ -300,6 +306,11 @@ export class CardGenerator {
     }
 
     const footerY = isStory ? 1800 : 990;
+    if (verdict.tags && verdict.tags.length) {
+      ctx.fillStyle = "#525252";
+      ctx.font = "500 16px monospace";
+      ctx.fillText(verdict.tags.slice(0, 4).join("  "), width / 2, footerY - 26);
+    }
     ctx.fillStyle = "#525252";
     ctx.font = "500 16px monospace";
     ctx.letterSpacing = "2px";
@@ -424,6 +435,11 @@ export class CardGenerator {
     }
 
     const footerY = isStory ? 1800 : 990;
+    if (verdict.tags && verdict.tags.length) {
+      ctx.fillStyle = "#a07855";
+      ctx.font = "italic 16px serif";
+      ctx.fillText(verdict.tags.slice(0, 4).join("  "), width / 2, footerY - 28);
+    }
     ctx.fillStyle = "#8b5a2b";
     ctx.font = "bold 18px serif";
     ctx.fillText("서기 2026년 ONE WORD LAB 謹呈", width / 2, footerY);
@@ -505,6 +521,11 @@ export class CardGenerator {
     }
 
     const footerY = isStory ? 1800 : 990;
+    if (verdict.tags && verdict.tags.length) {
+      ctx.fillStyle = "#22c55e";
+      ctx.font = "bold 16px monospace";
+      ctx.fillText(verdict.tags.slice(0, 4).join("  "), width / 2, footerY - 28);
+    }
     ctx.fillStyle = "#39ff14";
     ctx.font = "bold 18px monospace";
     ctx.fillText("INSERT COIN TO CONTINUE · ONE WORD LAB", width / 2, footerY);

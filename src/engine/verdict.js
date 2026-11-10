@@ -5,6 +5,7 @@
 import { JUDGES } from "./personas.js";
 import { GLOBAL_PRESETS } from "../i18n/translations.js";
 import { BIAS_MODES } from "./bias.js";
+import { TagEngine } from "./tags.js";
 
 export const CATEGORY_PRESETS = GLOBAL_PRESETS.ko;
 
@@ -262,7 +263,7 @@ export class VerdictEngine {
     const hashId = "v_" + Date.now().toString(36);
     const biasInfo = BIAS_MODES[activeBias] || BIAS_MODES.balanced;
 
-    return {
+    const result = {
       id: hashId,
       question: question.trim(),
       category: category,
@@ -276,5 +277,9 @@ export class VerdictEngine {
       bias_badge: activeLang === "en" ? biasInfo.badgeEn : biasInfo.badgeKo,
       decided_at: new Date().toISOString()
     };
+
+    result.tags = TagEngine.generateTags(result, activeLang);
+
+    return result;
   }
 }

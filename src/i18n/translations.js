@@ -81,7 +81,11 @@ export const TRANSLATIONS = {
     bias_realist_desc: "미스터 팩트 80% — 통장 잔고 & 내일의 후회 팩폭",
     bias_slider_label: "이성 vs 본능 미세 조율",
     bias_slider_help: "슬라이더를 좌우로 움직여 이성과 본능의 가중치를 미세하게 조율할 수 있습니다.",
-    bias_apply_btn: "성향 설정 완료"
+    bias_apply_btn: "성향 설정 완료",
+    trending_tags_label: "🔥 인기 고민 태그:",
+    tag_copied_toast: "해시태그 복사 완료! ✨",
+    click_to_copy_tags: "클릭 시 태그가 복사됩니다",
+    tags_heading: "🏷️ 추천 해시태그:"
   },
   en: {
     title: 'Decision fatigue, <span class="text-cyan-400">ended in ONE WORD</span>.',
@@ -160,7 +164,11 @@ export const TRANSLATIONS = {
     bias_realist_desc: "Mr. Fact 80% — Cold hard bank balance & morning regrets",
     bias_slider_label: "Fine-tune: Reason vs Instinct",
     bias_slider_help: "Move the slider left or right to fine-tune judge weight between cold logic and pure impulse.",
-    bias_apply_btn: "Done Tuning"
+    bias_apply_btn: "Done Tuning",
+    trending_tags_label: "🔥 Trending Topic Tags:",
+    tag_copied_toast: "Hashtag copied! ✨",
+    click_to_copy_tags: "Click tag to copy",
+    tags_heading: "🏷️ Viral Hashtags:"
   }
 };
 

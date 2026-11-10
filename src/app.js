@@ -13,6 +13,7 @@ import { IntentShare } from "./share/intentShare.js";
 import { InstallPromptManager } from "./pwa/installPrompt.js";
 import { StatsAnalyzer } from "./analytics/stats.js";
 import { JudgeBiasTuner, BIAS_MODES } from "./engine/bias.js";
+import { TagEngine, POPULAR_TAGS } from "./engine/tags.js";
 
 const engine = new VerdictEngine();
 const particleBurst = new NeonParticleBurst("fxCanvas");
@@ -171,6 +172,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const biasSliderHelpText = document.getElementById("biasSliderHelpText");
   const biasApplyBtnLabel = document.getElementById("biasApplyBtnLabel");
 
+  // 태그 및 해시태그 엘리먼트
+  const trendingTagsList = document.getElementById("trendingTagsList");
+  const trendingTagsLabel = document.getElementById("trendingTagsLabel");
+  const verdictTagsSection = document.getElementById("verdictTagsSection");
+  const tagsHeading = document.getElementById("tagsHeading");
+  const tagCopyHint = document.getElementById("tagCopyHint");
+  const verdictTagsList = document.getElementById("verdictTagsList");
+
   // PWA A2HS 인스톨 매니저 및 서비스워커 초기화
   installManager.init();
 
@@ -302,6 +311,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (biasRealistName) biasRealistName.textContent = i18n.t("bias_realist_name");
     const biasRealistDesc = document.getElementById("biasRealistDesc");
     if (biasRealistDesc) biasRealistDesc.textContent = i18n.t("bias_realist_desc");
+
+    // 태그 텍스트 동기화 및 렌더링
+    if (trendingTagsLabel) trendingTagsLabel.textContent = i18n.t("trending_tags_label");
+    if (tagsHeading) tagsHeading.textContent = i18n.t("tags_heading");
+    if (tagCopyHint) tagCopyHint.textContent = i18n.t("click_to_copy_tags");
+    renderTrendingTags();
+    if (window.currentVerdict) {
+      renderVerdictTags(window.currentVerdict);
+    }
 
     updateBiasUI();
   }
@@ -849,6 +867,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateBiasUI();
 
+  // 트렌딩 고민 태그 렌더링
+  function renderTrendingTags() {
+    if (!trendingTagsList) return;
+    trendingTagsList.innerHTML = "";
+    const curLang = i18n.getLanguage();
+    const tags = POPULAR_TAGS[curLang] || POPULAR_TAGS.ko;
+
+    tags.forEach(item => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "text-xs font-mono font-medium px-2.5 py-1 rounded-lg bg-gray-950 border border-gray-800 text-gray-400 hover:text-cyan-300 hover:border-cyan-800 hover:bg-cyan-950/40 transition cursor-pointer flex items-center space-x-1";
+      btn.innerHTML = `<span class="text-cyan-500 font-bold">#</span><span>${item.label.replace('#', '')}</span>`;
+      btn.addEventListener("click", () => {
+        sound.playClick();
+        sound.triggerHaptic([20]);
+        typeText(questionInput, item.prompt, 15);
+      });
+      trendingTagsList.appendChild(btn);
+    });
+  }
+
+  // 판결 결과 해시태그 칩스 렌더링
+  function renderVerdictTags(verdict) {
+    if (!verdictTagsList) return;
+    verdictTagsList.innerHTML = "";
+    const curLang = i18n.getLanguage();
+    const tags = (verdict.tags && verdict.tags.length) 
+      ? verdict.tags 
+      : TagEngine.generateTags(verdict, curLang);
+
+    tags.forEach(tag => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "text-xs font-mono font-semibold px-2.5 py-1 rounded-lg bg-gray-900 border border-gray-800 text-cyan-300 hover:border-cyan-500 hover:bg-cyan-950/60 transition cursor-pointer active:scale-95 flex items-center space-x-1";
+      chip.textContent = tag;
+      chip.title = i18n.t("click_to_copy_tags");
+
+      chip.addEventListener("click", () => {
+        sound.playClick();
+        sound.triggerHaptic([30]);
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(tag).then(() => {
+            const orig = chip.textContent;
+            chip.textContent = i18n.t("tag_copied_toast");
+            chip.classList.add("border-emerald-500", "text-emerald-400");
+            setTimeout(() => {
+              chip.textContent = orig;
+              chip.classList.remove("border-emerald-500", "text-emerald-400");
+            }, 1800);
+          });
+        }
+      });
+      verdictTagsList.appendChild(chip);
+    });
+  }
+
+  renderTrendingTags();
+
   function typeText(element, text, speed = 20, onComplete = null) {
     const isInput = element.tagName === "TEXTAREA" || element.tagName === "INPUT";
     if (isInput) {
@@ -951,6 +1027,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 시민 배심원 투표 렌더링
     renderPoll(verdict);
+
+    // 바이럴 해시태그 렌더링
+    renderVerdictTags(verdict);
 
     renderHistory();
   }
