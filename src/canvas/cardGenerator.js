@@ -114,15 +114,16 @@ export class CardGenerator {
     ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
     ctx.strokeStyle = theme.primary;
     ctx.lineWidth = 2;
-    const badgeW = 200;
+    const badgeW = 340;
     const badgeH = 40;
     this.roundRect(ctx, width / 2 - badgeW / 2, catBadgeY, badgeW, badgeH, 12);
     ctx.fill();
     ctx.stroke();
     ctx.fillStyle = theme.primary;
-    ctx.font = "bold 18px monospace";
-    ctx.letterSpacing = "3px";
-    ctx.fillText(`CATEGORY: ${verdict.category.toUpperCase()}`, width / 2, catBadgeY + 26);
+    ctx.font = "bold 16px monospace";
+    ctx.letterSpacing = "2px";
+    const biasTag = verdict.bias_badge ? ` | ${verdict.bias_badge}` : "";
+    ctx.fillText(`CATEGORY: ${verdict.category.toUpperCase()}${biasTag}`, width / 2, catBadgeY + 25);
     ctx.restore();
 
     const questionY = startY + (isStory ? 180 : 120);
@@ -240,8 +241,9 @@ export class CardGenerator {
     const startY = isStory ? 220 : 130;
     ctx.fillStyle = "#737373";
     ctx.font = "600 20px -apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
-    ctx.letterSpacing = "8px";
-    ctx.fillText("ONE WORD VERDICT", width / 2, startY);
+    ctx.letterSpacing = "6px";
+    const biasTagMinimal = verdict.bias_badge ? ` · ${verdict.bias_badge}` : "";
+    ctx.fillText(`ONE WORD VERDICT${biasTagMinimal}`, width / 2, startY);
 
     const questionY = startY + (isStory ? 180 : 130);
     ctx.fillStyle = "#a3a3a3";
@@ -335,7 +337,8 @@ export class CardGenerator {
     ctx.fillStyle = "#7a5230";
     ctx.font = "italic 20px serif";
     ctx.letterSpacing = "3px";
-    ctx.fillText("THE SUPREME COURT OF ONE WORD", width / 2, startY + 36);
+    const biasTagParchment = verdict.bias_badge ? ` [${verdict.bias_badge}]` : "";
+    ctx.fillText(`THE SUPREME COURT OF ONE WORD${biasTagParchment}`, width / 2, startY + 36);
 
     const questionY = startY + (isStory ? 170 : 120);
     ctx.fillStyle = "#3d2314";
@@ -448,8 +451,9 @@ export class CardGenerator {
     ctx.textAlign = "center";
     const startY = isStory ? 220 : 130;
     ctx.fillStyle = "#39ff14";
-    ctx.font = "bold 24px monospace";
-    ctx.fillText("★ ARCADE JUDGMENT SYSTEM ★", width / 2, startY);
+    ctx.font = "bold 22px monospace";
+    const biasTag8Bit = verdict.bias_badge ? ` - ${verdict.bias_badge}` : "";
+    ctx.fillText(`★ ARCADE JUDGMENT${biasTag8Bit} ★`, width / 2, startY);
 
     const questionY = startY + (isStory ? 180 : 120);
     ctx.fillStyle = "#a3e635";

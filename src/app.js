@@ -12,10 +12,12 @@ import { i18n, TRANSLATIONS } from "./i18n/translations.js";
 import { IntentShare } from "./share/intentShare.js";
 import { InstallPromptManager } from "./pwa/installPrompt.js";
 import { StatsAnalyzer } from "./analytics/stats.js";
+import { JudgeBiasTuner, BIAS_MODES } from "./engine/bias.js";
 
 const engine = new VerdictEngine();
 const particleBurst = new NeonParticleBurst("fxCanvas");
 const installManager = new InstallPromptManager();
+const biasTuner = new JudgeBiasTuner();
 
 const THEMES = {
   shopping: {
@@ -150,6 +152,25 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentCategory = "all";
   let modalFilterCat = "all";
 
+  // AI 심판관 성향 튜너 엘리먼트
+  const biasModal = document.getElementById("biasModal");
+  const openBiasModalBtn = document.getElementById("openBiasModalBtn");
+  const openBiasTunerBtn = document.getElementById("openBiasTunerBtn");
+  const closeBiasModalBtn = document.getElementById("closeBiasModalBtn");
+  const closeBiasModalFooterBtn = document.getElementById("closeBiasModalFooterBtn");
+  const biasModalBackdrop = document.getElementById("biasModalBackdrop");
+  const biasCards = document.querySelectorAll(".bias-card");
+  const biasSlider = document.getElementById("biasSlider");
+  const biasSliderValueText = document.getElementById("biasSliderValueText");
+  const currentBiasBadge = document.getElementById("currentBiasBadge");
+  const verdictBiasBadge = document.getElementById("verdictBiasBadge");
+  const inlineBiasLabel = document.getElementById("inlineBiasLabel");
+  const biasBtnLabel = document.getElementById("biasBtnLabel");
+  const biasModalTitle = document.getElementById("biasModalTitle");
+  const biasModalDesc = document.getElementById("biasModalDesc");
+  const biasSliderHelpText = document.getElementById("biasSliderHelpText");
+  const biasApplyBtnLabel = document.getElementById("biasApplyBtnLabel");
+
   // PWA A2HS 인스톨 매니저 및 서비스워커 초기화
   installManager.init();
 
@@ -253,6 +274,36 @@ document.addEventListener("DOMContentLoaded", () => {
     if (statsModal && !statsModal.classList.contains("hidden")) {
       renderStats();
     }
+
+    // AI 심판관 성향 튜너 다국어 번역 동기화
+    if (biasBtnLabel) biasBtnLabel.textContent = i18n.t("bias_btn");
+    if (inlineBiasLabel) inlineBiasLabel.textContent = i18n.t("bias_badge_label");
+    if (biasModalTitle) biasModalTitle.innerHTML = `<span>${i18n.t("bias_modal_title")}</span>`;
+    if (biasModalDesc) biasModalDesc.textContent = i18n.t("bias_modal_desc");
+    if (biasSliderHelpText) biasSliderHelpText.textContent = i18n.t("bias_slider_help");
+    if (biasApplyBtnLabel) biasApplyBtnLabel.textContent = i18n.t("bias_apply_btn");
+
+    const biasBalancedName = document.getElementById("biasBalancedName");
+    if (biasBalancedName) biasBalancedName.textContent = i18n.t("bias_balanced_name");
+    const biasBalancedDesc = document.getElementById("biasBalancedDesc");
+    if (biasBalancedDesc) biasBalancedDesc.textContent = i18n.t("bias_balanced_desc");
+
+    const biasRationalName = document.getElementById("biasRationalName");
+    if (biasRationalName) biasRationalName.textContent = i18n.t("bias_rational_name");
+    const biasRationalDesc = document.getElementById("biasRationalDesc");
+    if (biasRationalDesc) biasRationalDesc.textContent = i18n.t("bias_rational_desc");
+
+    const biasVibeName = document.getElementById("biasVibeName");
+    if (biasVibeName) biasVibeName.textContent = i18n.t("bias_vibe_name");
+    const biasVibeDesc = document.getElementById("biasVibeDesc");
+    if (biasVibeDesc) biasVibeDesc.textContent = i18n.t("bias_vibe_desc");
+
+    const biasRealistName = document.getElementById("biasRealistName");
+    if (biasRealistName) biasRealistName.textContent = i18n.t("bias_realist_name");
+    const biasRealistDesc = document.getElementById("biasRealistDesc");
+    if (biasRealistDesc) biasRealistDesc.textContent = i18n.t("bias_realist_desc");
+
+    updateBiasUI();
   }
 
   // 언어 토글 이벤트
@@ -707,6 +758,97 @@ document.addEventListener("DOMContentLoaded", () => {
   if (closeStatsModalFooterBtn) closeStatsModalFooterBtn.addEventListener("click", closeStatsModal);
   if (statsModalBackdrop) statsModalBackdrop.addEventListener("click", closeStatsModal);
 
+  // 성향 튜너 UI 업데이트 및 이벤트 바인딩
+  function updateBiasUI() {
+    const currentMode = biasTuner.getMode();
+    const curLang = i18n.getLanguage();
+    const info = biasTuner.getModeInfo();
+
+    if (currentBiasBadge) {
+      currentBiasBadge.textContent = curLang === "en" ? info.badgeEn : info.badgeKo;
+    }
+
+    biasCards.forEach(card => {
+      const isSelected = card.dataset.bias === currentMode;
+      const check = card.querySelector(".bias-check");
+      const nameEl = card.querySelector(".bias-name");
+
+      card.className = isSelected
+        ? "bias-card p-3.5 rounded-xl border border-cyan-500 bg-cyan-950/40 cursor-pointer transition relative shadow-sm"
+        : "bias-card p-3.5 rounded-xl border border-gray-800 bg-gray-950/60 hover:border-gray-700 cursor-pointer transition relative";
+
+      if (check) check.classList.toggle("hidden", !isSelected);
+      if (nameEl) {
+        nameEl.className = isSelected
+          ? "mt-2 font-bold text-sm text-cyan-300 bias-name"
+          : "mt-2 font-bold text-sm text-gray-200 bias-name";
+      }
+    });
+
+    if (biasSlider) {
+      biasSlider.value = info.sliderVal || 50;
+    }
+    if (biasSliderValueText) {
+      const name = curLang === "en" ? info.nameEn : info.nameKo;
+      biasSliderValueText.textContent = `${info.icon} ${name} (${info.sliderVal}%)`;
+    }
+  }
+
+  const openBiasModal = () => {
+    sound.playClick();
+    updateBiasUI();
+    if (biasModal) biasModal.classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
+  };
+  const closeBiasModal = () => {
+    sound.playClick();
+    if (biasModal) biasModal.classList.add("hidden");
+    document.body.classList.remove("overflow-hidden");
+  };
+
+  if (openBiasModalBtn) openBiasModalBtn.addEventListener("click", openBiasModal);
+  if (openBiasTunerBtn) openBiasTunerBtn.addEventListener("click", openBiasModal);
+  if (closeBiasModalBtn) closeBiasModalBtn.addEventListener("click", closeBiasModal);
+  if (closeBiasModalFooterBtn) closeBiasModalFooterBtn.addEventListener("click", closeBiasModal);
+  if (biasModalBackdrop) biasModalBackdrop.addEventListener("click", closeBiasModal);
+
+  biasCards.forEach(card => {
+    card.addEventListener("click", () => {
+      sound.playClick();
+      sound.triggerHaptic([20]);
+      const mode = card.dataset.bias;
+      biasTuner.setMode(mode);
+      updateBiasUI();
+    });
+  });
+
+  if (biasSlider) {
+    biasSlider.addEventListener("input", (e) => {
+      const val = Number(e.target.value);
+      const mode = JudgeBiasTuner.fromSlider(val);
+      biasTuner.setMode(mode);
+      const curLang = i18n.getLanguage();
+      const info = biasTuner.getModeInfo();
+      if (biasSliderValueText) {
+        const name = curLang === "en" ? info.nameEn : info.nameKo;
+        biasSliderValueText.textContent = `${info.icon} ${name} (${val}%)`;
+      }
+      biasCards.forEach(card => {
+        const isSelected = card.dataset.bias === mode;
+        const check = card.querySelector(".bias-check");
+        card.className = isSelected
+          ? "bias-card p-3.5 rounded-xl border border-cyan-500 bg-cyan-950/40 cursor-pointer transition relative shadow-sm"
+          : "bias-card p-3.5 rounded-xl border border-gray-800 bg-gray-950/60 hover:border-gray-700 cursor-pointer transition relative";
+        if (check) check.classList.toggle("hidden", !isSelected);
+      });
+      if (currentBiasBadge) {
+        currentBiasBadge.textContent = curLang === "en" ? info.badgeEn : info.badgeKo;
+      }
+    });
+  }
+
+  updateBiasUI();
+
   function typeText(element, text, speed = 20, onComplete = null) {
     const isInput = element.tagName === "TEXTAREA" || element.tagName === "INPUT";
     if (isInput) {
@@ -742,7 +884,7 @@ document.addEventListener("DOMContentLoaded", () => {
     inputSection.classList.add("hidden");
     judgingSection.classList.remove("hidden");
 
-    const verdict = engine.evaluate(q, i18n.getLanguage());
+    const verdict = engine.evaluate(q, i18n.getLanguage(), biasTuner.getMode());
     window.currentVerdict = verdict;
     StorageManager.saveVerdict(verdict);
 
@@ -790,6 +932,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (categoryBadge) {
       categoryBadge.textContent = verdict.category.toUpperCase();
       categoryBadge.className = `px-2 py-0.5 rounded text-xs font-mono font-bold uppercase ${theme.badge}`;
+    }
+
+    if (verdictBiasBadge) {
+      verdictBiasBadge.textContent = verdict.bias_badge || biasTuner.getBadgeText(i18n.getLanguage());
     }
 
     if (confidenceBadge) {

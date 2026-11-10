@@ -66,7 +66,22 @@ export const TRANSLATIONS = {
     stats_top_word_label: "최다 선고 단어",
     stats_persona_heading: "🧬 나의 결정 DNA 페르소나",
     stats_category_breakdown: "📈 카테고리별 결정 분포",
-    stats_empty_notice: "아직 내린 판결이 없습니다. 고민을 입력하고 판결을 받아보세요!"
+    stats_empty_notice: "아직 내린 판결이 없습니다. 고민을 입력하고 판결을 받아보세요!",
+    bias_btn: "⚖️ 성향",
+    bias_badge_label: "심판 성향:",
+    bias_modal_title: "⚖️ AI 심판관 성향 튜너",
+    bias_modal_desc: "3인의 심판관 중 누구의 목소리에 더 힘을 실어줄지 결정하세요. 판결 단어와 펀치라인 성향이 실시간으로 조율됩니다.",
+    bias_balanced_name: "밸런스 모드",
+    bias_balanced_desc: "이성 33% · 행동 33% · 현실 33% 균등 토론",
+    bias_rational_name: "극단적 이성파",
+    bias_rational_desc: "닥터 로직 80% — 충동 억제 & 냉철한 손익 계산",
+    bias_vibe_name: "도파민 풀악셀",
+    bias_vibe_desc: "캡틴 바이브 80% — 직진과 실행, 저지르고 보기",
+    bias_realist_name: "현실 팩폭러",
+    bias_realist_desc: "미스터 팩트 80% — 통장 잔고 & 내일의 후회 팩폭",
+    bias_slider_label: "이성 vs 본능 미세 조율",
+    bias_slider_help: "슬라이더를 좌우로 움직여 이성과 본능의 가중치를 미세하게 조율할 수 있습니다.",
+    bias_apply_btn: "성향 설정 완료"
   },
   en: {
     title: 'Decision fatigue, <span class="text-cyan-400">ended in ONE WORD</span>.',
@@ -130,7 +145,22 @@ export const TRANSLATIONS = {
     stats_top_word_label: "Top Verdict Word",
     stats_persona_heading: "🧬 My Decision DNA Persona",
     stats_category_breakdown: "📈 Category Breakdown",
-    stats_empty_notice: "No verdicts saved yet. Submit your first dilemma to unlock analytics!"
+    stats_empty_notice: "No verdicts saved yet. Submit your first dilemma to unlock analytics!",
+    bias_btn: "⚖️ Bias",
+    bias_badge_label: "Judge Bias:",
+    bias_modal_title: "⚖️ AI Judge Bias Tuner",
+    bias_modal_desc: "Choose which judge's voice carries the most weight. Verdict words and punchlines adapt in real-time.",
+    bias_balanced_name: "Balanced Mode",
+    bias_balanced_desc: "Equal 33% weight: Logic, Vibe & Reality",
+    bias_rational_name: "Hyper-Rational",
+    bias_rational_desc: "Dr. Logic 80% — Impulse control & cold calculus",
+    bias_vibe_name: "Full-Vibe YOLO",
+    bias_vibe_desc: "Captain Vibe 80% — Adrenaline, action & no regrets",
+    bias_realist_name: "Brutal Reality",
+    bias_realist_desc: "Mr. Fact 80% — Cold hard bank balance & morning regrets",
+    bias_slider_label: "Fine-tune: Reason vs Instinct",
+    bias_slider_help: "Move the slider left or right to fine-tune judge weight between cold logic and pure impulse.",
+    bias_apply_btn: "Done Tuning"
   }
 };
 

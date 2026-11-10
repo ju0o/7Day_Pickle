@@ -5,7 +5,7 @@
  * - Zero external build tool dependency (Pure Vanilla Web Worker)
  */
 
-const CACHE_NAME = "oneword-cache-v0.8.2";
+const CACHE_NAME = "oneword-cache-v0.8.3";
 
 const PRECACHE_ASSETS = [
   "./",
@@ -16,6 +16,7 @@ const PRECACHE_ASSETS = [
   "./src/app.js",
   "./src/audio/sound.js",
   "./src/canvas/cardGenerator.js",
+  "./src/engine/bias.js",
   "./src/engine/personas.js",
   "./src/engine/verdict.js",
   "./src/engine/voting.js",

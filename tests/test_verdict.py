@@ -20,6 +20,7 @@ class TestOneWordScaffolding(unittest.TestCase):
             "src/app.js",
             "src/audio/sound.js",
             "src/canvas/cardGenerator.js",
+            "src/engine/bias.js",
             "src/engine/personas.js",
             "src/engine/verdict.js",
             "src/engine/voting.js",
@@ -133,6 +134,11 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn('id="installModal"', content)
         self.assertIn('id="openStatsModalBtn"', content)
         self.assertIn('id="statsModal"', content)
+        self.assertIn('id="openBiasModalBtn"', content)
+        self.assertIn('id="openBiasTunerBtn"', content)
+        self.assertIn('id="biasModal"', content)
+        self.assertIn('id="biasSlider"', content)
+        self.assertIn('id="verdictBiasBadge"', content)
         self.assertIn('apple-mobile-web-app-capable', content)
         self.assertIn('apple-touch-icon', content)
 
@@ -205,6 +211,32 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("stats_btn", i18n_content)
         self.assertIn("stats_modal_title", i18n_content)
         self.assertIn("stats_persona_heading", i18n_content)
+
+    def test_judge_bias_tuner_and_modes(self):
+        bias_path = os.path.join(PROJECT_ROOT, "src/engine/bias.js")
+        with open(bias_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("JudgeBiasTuner", content)
+        self.assertIn("BIAS_MODES", content)
+        self.assertIn("balanced", content)
+        self.assertIn("rational", content)
+        self.assertIn("vibe", content)
+        self.assertIn("realist", content)
+        self.assertIn("fromSlider", content)
+
+        engine_path = os.path.join(PROJECT_ROOT, "src/engine/verdict.js")
+        with open(engine_path, "r", encoding="utf-8") as f:
+            engine_content = f.read()
+        self.assertIn("activeBias", engine_content)
+        self.assertIn("bias_badge", engine_content)
+
+        i18n_path = os.path.join(PROJECT_ROOT, "src/i18n/translations.js")
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            i18n_content = f.read()
+        self.assertIn("bias_btn", i18n_content)
+        self.assertIn("bias_modal_title", i18n_content)
+        self.assertIn("bias_balanced_name", i18n_content)
+        self.assertIn("bias_vibe_name", i18n_content)
 
 if __name__ == "__main__":
     unittest.main()
