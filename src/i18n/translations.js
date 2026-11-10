@@ -57,7 +57,16 @@ export const TRANSLATIONS = {
     pwa_android_title: "🤖 안드로이드 / 크롬 설치",
     pwa_android_desc: "브라우저 네이티브 프롬프트를 통해 1초 만에 스마트폰 홈 화면에 바로 설치됩니다.",
     pwa_android_btn: "🚀 홈 화면에 바로 설치하기",
-    pwa_modal_close: "닫기"
+    pwa_modal_close: "닫기",
+    stats_btn: "📊 분석",
+    stats_modal_title: "📊 나의 결정 DNA & 통계 인사이트",
+    stats_modal_subtitle: "내 브라우저에 누적된 판결 성향 및 카테고리별 패턴 분석",
+    stats_total_label: "총 누적 판결",
+    stats_top_cat_label: "최다 고민 분야",
+    stats_top_word_label: "최다 선고 단어",
+    stats_persona_heading: "🧬 나의 결정 DNA 페르소나",
+    stats_category_breakdown: "📈 카테고리별 결정 분포",
+    stats_empty_notice: "아직 내린 판결이 없습니다. 고민을 입력하고 판결을 받아보세요!"
   },
   en: {
     title: 'Decision fatigue, <span class="text-cyan-400">ended in ONE WORD</span>.',
@@ -112,7 +121,16 @@ export const TRANSLATIONS = {
     pwa_android_title: "🤖 Android / Desktop Chrome Install",
     pwa_android_desc: "Installs directly to your home screen in 1 second via native browser prompt.",
     pwa_android_btn: "🚀 Install to Home Screen Now",
-    pwa_modal_close: "Close"
+    pwa_modal_close: "Close",
+    stats_btn: "📊 Analytics",
+    stats_modal_title: "📊 Decision DNA & Analytics",
+    stats_modal_subtitle: "Locally analyzed decision patterns & dilemma distribution",
+    stats_total_label: "Total Verdicts",
+    stats_top_cat_label: "Top Category",
+    stats_top_word_label: "Top Verdict Word",
+    stats_persona_heading: "🧬 My Decision DNA Persona",
+    stats_category_breakdown: "📈 Category Breakdown",
+    stats_empty_notice: "No verdicts saved yet. Submit your first dilemma to unlock analytics!"
   }
 };
 

@@ -16,6 +16,7 @@ class TestOneWordScaffolding(unittest.TestCase):
         required_files = [
             "index.html",
             "sw.js",
+            "src/analytics/stats.js",
             "src/app.js",
             "src/audio/sound.js",
             "src/canvas/cardGenerator.js",
@@ -130,6 +131,8 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn('id="pwaInstallBtn"', content)
         self.assertIn('id="offlineBadge"', content)
         self.assertIn('id="installModal"', content)
+        self.assertIn('id="openStatsModalBtn"', content)
+        self.assertIn('id="statsModal"', content)
         self.assertIn('apple-mobile-web-app-capable', content)
         self.assertIn('apple-touch-icon', content)
 
@@ -185,6 +188,23 @@ class TestOneWordScaffolding(unittest.TestCase):
         self.assertIn("pwa_install_btn", i18n_content)
         self.assertIn("pwa_modal_title", i18n_content)
         self.assertIn("pwa_ios_title", i18n_content)
+
+    def test_analytics_and_decision_dna(self):
+        stats_path = os.path.join(PROJECT_ROOT, "src/analytics/stats.js")
+        with open(stats_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("StatsAnalyzer", content)
+        self.assertIn("analyze", content)
+        self.assertIn("categoryPercents", content)
+        self.assertIn("topVerdictWord", content)
+        self.assertIn("persona", content)
+
+        i18n_path = os.path.join(PROJECT_ROOT, "src/i18n/translations.js")
+        with open(i18n_path, "r", encoding="utf-8") as f:
+            i18n_content = f.read()
+        self.assertIn("stats_btn", i18n_content)
+        self.assertIn("stats_modal_title", i18n_content)
+        self.assertIn("stats_persona_heading", i18n_content)
 
 if __name__ == "__main__":
     unittest.main()

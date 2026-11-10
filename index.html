@@ -109,6 +109,11 @@
           <span id="historyCountBadge" class="hidden px-1.5 py-0.2 bg-cyan-950 text-cyan-400 rounded-full text-[10px]">0</span>
         </button>
 
+        <!-- 통계 분석 버튼 -->
+        <button id="openStatsModalBtn" class="text-xs font-mono font-bold px-2.5 py-1.5 rounded-lg bg-gray-900 border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition cursor-pointer flex items-center space-x-1">
+          <span id="statsBtnLabel">📊 분석</span>
+        </button>
+
         <!-- 4대 사운드 테마 드롭다운 셀렉터 -->
         <div class="relative">
           <button id="soundThemeBtn" class="text-xs font-mono font-bold px-2.5 py-1.5 rounded-lg bg-gray-900 border border-gray-800 text-cyan-400 hover:bg-gray-800 transition cursor-pointer flex items-center space-x-1">
@@ -500,6 +505,112 @@
       <div class="flex justify-end pt-2">
         <button id="closeInstallModalFooterBtn" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs transition cursor-pointer">
           <span id="pwaModalCloseText">닫기</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 통계 및 결정 DNA 분석 모달 -->
+  <div id="statsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div id="statsModalBackdrop" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+    <div class="relative bg-gray-900 border border-gray-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl z-10 space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex items-start justify-between border-b border-gray-800 pb-3">
+        <div class="space-y-0.5">
+          <h3 id="statsModalTitle" class="text-base font-bold text-white flex items-center space-x-2">
+            <span>📊 나의 결정 DNA & 통계 인사이트</span>
+          </h3>
+          <p id="statsModalSubtitle" class="text-xs text-gray-400">
+            내 브라우저에 누적된 판결 성향 및 카테고리별 패턴 분석
+          </p>
+        </div>
+        <button id="closeStatsModalBtn" class="text-gray-400 hover:text-white text-xl font-mono cursor-pointer p-1">
+          ✕
+        </button>
+      </div>
+
+      <div class="flex-grow overflow-y-auto space-y-4 pr-1 text-xs">
+        <!-- 3대 핵심 KPI 지표 카드 -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-gray-950 border border-gray-800 rounded-xl p-3 text-center space-y-1">
+            <span class="text-[10px] text-gray-400 font-mono block" id="kpiTotalLabel">총 누적 판결</span>
+            <span class="text-lg font-extrabold text-cyan-400 font-mono block" id="kpiTotalVal">0</span>
+          </div>
+          <div class="bg-gray-950 border border-gray-800 rounded-xl p-3 text-center space-y-1">
+            <span class="text-[10px] text-gray-400 font-mono block" id="kpiTopCatLabel">최다 고민 분야</span>
+            <span class="text-sm font-bold text-amber-400 block truncate" id="kpiTopCatVal">-</span>
+          </div>
+          <div class="bg-gray-950 border border-gray-800 rounded-xl p-3 text-center space-y-1">
+            <span class="text-[10px] text-gray-400 font-mono block" id="kpiTopWordLabel">최다 선고 단어</span>
+            <span class="text-sm font-extrabold text-pink-400 font-mono block" id="kpiTopWordVal">-</span>
+          </div>
+        </div>
+
+        <!-- 결정 DNA 페르소나 카드 -->
+        <div class="bg-gradient-to-br from-cyan-950/40 via-gray-950 to-pink-950/40 border border-cyan-800/60 rounded-xl p-4 space-y-1.5 shadow-lg">
+          <div class="flex items-center space-x-1.5 text-cyan-400 font-bold text-xs">
+            <span id="personaHeading">🧬 나의 결정 DNA 페르소나</span>
+          </div>
+          <div class="text-base font-extrabold text-white flex items-center space-x-2" id="personaTitle">
+            <span>🌱 결정 탐색가</span>
+          </div>
+          <p class="text-gray-300 leading-relaxed text-xs" id="personaDesc">
+            아직 내린 판결이 없습니다. 첫 고민을 판결받고 나의 결정 DNA를 확인해보세요!
+          </p>
+        </div>
+
+        <!-- 카테고리별 결정 분포 바 차트 -->
+        <div class="bg-gray-950 border border-gray-800 rounded-xl p-4 space-y-3">
+          <div class="font-bold text-gray-300 flex items-center justify-between" id="breakdownHeading">
+            <span>📈 카테고리별 결정 분포</span>
+          </div>
+          <div class="space-y-2.5" id="statsBarsContainer">
+            <!-- 지름신 바 -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px] text-gray-400 font-mono">
+                <span class="text-amber-400 font-bold" id="statCatShoppingLabel">🛍️ 지름신</span>
+                <span id="statBarShoppingText">0% (0회)</span>
+              </div>
+              <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden border border-gray-800">
+                <div id="statBarShopping" class="bg-amber-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- 커리어 바 -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px] text-gray-400 font-mono">
+                <span class="text-cyan-400 font-bold" id="statCatCareerLabel">💼 커리어</span>
+                <span id="statBarCareerText">0% (0회)</span>
+              </div>
+              <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden border border-gray-800">
+                <div id="statBarCareer" class="bg-cyan-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- 연애 바 -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px] text-gray-400 font-mono">
+                <span class="text-pink-400 font-bold" id="statCatLoveLabel">💌 연애</span>
+                <span id="statBarLoveText">0% (0회)</span>
+              </div>
+              <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden border border-gray-800">
+                <div id="statBarLove" class="bg-pink-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- 일상 바 -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[11px] text-gray-400 font-mono">
+                <span class="text-purple-400 font-bold" id="statCatDailyLabel">🍜 일상</span>
+                <span id="statBarDailyText">0% (0회)</span>
+              </div>
+              <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden border border-gray-800">
+                <div id="statBarDaily" class="bg-purple-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-800 pt-3 flex justify-end">
+        <button id="closeStatsModalFooterBtn" class="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs transition cursor-pointer">
+          닫기
         </button>
       </div>
     </div>

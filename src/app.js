@@ -1,5 +1,5 @@
 /**
- * OneWord: Main Application Controller (v0.8.0 - PWA Offline Caching & Native A2HS Installer Prompt)
+ * OneWord: Main Application Controller (v0.8.2 - Decision DNA & Analytics Dashboard)
  */
 
 import { VerdictEngine } from "./engine/verdict.js";
@@ -11,6 +11,7 @@ import { VoteSimulator } from "./engine/voting.js";
 import { i18n, TRANSLATIONS } from "./i18n/translations.js";
 import { IntentShare } from "./share/intentShare.js";
 import { InstallPromptManager } from "./pwa/installPrompt.js";
+import { StatsAnalyzer } from "./analytics/stats.js";
 
 const engine = new VerdictEngine();
 const particleBurst = new NeonParticleBurst("fxCanvas");
@@ -124,6 +125,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const clearAllHistoryBtn = document.getElementById("clearAllHistoryBtn");
   const modalCatFilters = document.querySelectorAll(".modal-cat-filter");
 
+  // 통계 모달 엘리먼트
+  const statsModal = document.getElementById("statsModal");
+  const openStatsModalBtn = document.getElementById("openStatsModalBtn");
+  const closeStatsModalBtn = document.getElementById("closeStatsModalBtn");
+  const closeStatsModalFooterBtn = document.getElementById("closeStatsModalFooterBtn");
+  const statsModalBackdrop = document.getElementById("statsModalBackdrop");
+
+  const kpiTotalVal = document.getElementById("kpiTotalVal");
+  const kpiTopCatVal = document.getElementById("kpiTopCatVal");
+  const kpiTopWordVal = document.getElementById("kpiTopWordVal");
+  const personaTitle = document.getElementById("personaTitle");
+  const personaDesc = document.getElementById("personaDesc");
+
+  const statBarShopping = document.getElementById("statBarShopping");
+  const statBarShoppingText = document.getElementById("statBarShoppingText");
+  const statBarCareer = document.getElementById("statBarCareer");
+  const statBarCareerText = document.getElementById("statBarCareerText");
+  const statBarLove = document.getElementById("statBarLove");
+  const statBarLoveText = document.getElementById("statBarLoveText");
+  const statBarDaily = document.getElementById("statBarDaily");
+  const statBarDailyText = document.getElementById("statBarDailyText");
+
   let currentCategory = "all";
   let modalFilterCat = "all";
 
@@ -208,6 +231,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // PWA 인스톨 UI 다국어 번역 동기화
     installManager.setLanguage(curLang, TRANSLATIONS);
+
+    // 통계 모달 텍스트 번역
+    const statsBtnLabel = document.getElementById("statsBtnLabel");
+    if (statsBtnLabel) statsBtnLabel.textContent = i18n.t("stats_btn");
+    const statsModalTitle = document.getElementById("statsModalTitle");
+    if (statsModalTitle) statsModalTitle.innerHTML = `<span>${i18n.t("stats_modal_title")}</span>`;
+    const statsModalSubtitle = document.getElementById("statsModalSubtitle");
+    if (statsModalSubtitle) statsModalSubtitle.textContent = i18n.t("stats_modal_subtitle");
+    const kpiTotalLabel = document.getElementById("kpiTotalLabel");
+    if (kpiTotalLabel) kpiTotalLabel.textContent = i18n.t("stats_total_label");
+    const kpiTopCatLabel = document.getElementById("kpiTopCatLabel");
+    if (kpiTopCatLabel) kpiTopCatLabel.textContent = i18n.t("stats_top_cat_label");
+    const kpiTopWordLabel = document.getElementById("kpiTopWordLabel");
+    if (kpiTopWordLabel) kpiTopWordLabel.textContent = i18n.t("stats_top_word_label");
+    const personaHeading = document.getElementById("personaHeading");
+    if (personaHeading) personaHeading.textContent = i18n.t("stats_persona_heading");
+    const breakdownHeading = document.getElementById("breakdownHeading");
+    if (breakdownHeading) breakdownHeading.innerHTML = `<span>${i18n.t("stats_category_breakdown")}</span>`;
+
+    if (statsModal && !statsModal.classList.contains("hidden")) {
+      renderStats();
+    }
   }
 
   // 언어 토글 이벤트
@@ -609,9 +654,58 @@ document.addEventListener("DOMContentLoaded", () => {
         StorageManager.clearHistory();
         renderHistory();
         renderModalHistory(modalFilterCat);
+        renderStats();
       }
     });
   }
+
+  // 통계 모달 렌더링 및 이벤트
+  function renderStats() {
+    const history = StorageManager.getHistory();
+    const curLang = i18n.getLanguage();
+    const stats = StatsAnalyzer.analyze(history, curLang);
+
+    if (kpiTotalVal) kpiTotalVal.textContent = stats.total;
+    if (kpiTopCatVal) kpiTopCatVal.textContent = stats.topCategoryLabel;
+    if (kpiTopWordVal) kpiTopWordVal.textContent = stats.topVerdictWord;
+
+    if (personaTitle) personaTitle.innerHTML = `<span>${stats.persona.title}</span>`;
+    if (personaDesc) personaDesc.textContent = stats.persona.desc;
+
+    if (statBarShopping && statBarShoppingText) {
+      statBarShopping.style.width = `${stats.categoryPercents.shopping}%`;
+      statBarShoppingText.textContent = `${stats.categoryPercents.shopping}% (${stats.categoryCounts.shopping})`;
+    }
+    if (statBarCareer && statBarCareerText) {
+      statBarCareer.style.width = `${stats.categoryPercents.career}%`;
+      statBarCareerText.textContent = `${stats.categoryPercents.career}% (${stats.categoryCounts.career})`;
+    }
+    if (statBarLove && statBarLoveText) {
+      statBarLove.style.width = `${stats.categoryPercents.love}%`;
+      statBarLoveText.textContent = `${stats.categoryPercents.love}% (${stats.categoryCounts.love})`;
+    }
+    if (statBarDaily && statBarDailyText) {
+      statBarDaily.style.width = `${stats.categoryPercents.daily}%`;
+      statBarDailyText.textContent = `${stats.categoryPercents.daily}% (${stats.categoryCounts.daily})`;
+    }
+  }
+
+  const openStatsModal = () => {
+    sound.playClick();
+    renderStats();
+    if (statsModal) statsModal.classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
+  };
+  const closeStatsModal = () => {
+    sound.playClick();
+    if (statsModal) statsModal.classList.add("hidden");
+    document.body.classList.remove("overflow-hidden");
+  };
+
+  if (openStatsModalBtn) openStatsModalBtn.addEventListener("click", openStatsModal);
+  if (closeStatsModalBtn) closeStatsModalBtn.addEventListener("click", closeStatsModal);
+  if (closeStatsModalFooterBtn) closeStatsModalFooterBtn.addEventListener("click", closeStatsModal);
+  if (statsModalBackdrop) statsModalBackdrop.addEventListener("click", closeStatsModal);
 
   function typeText(element, text, speed = 20, onComplete = null) {
     const isInput = element.tagName === "TEXTAREA" || element.tagName === "INPUT";

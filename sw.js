@@ -5,13 +5,14 @@
  * - Zero external build tool dependency (Pure Vanilla Web Worker)
  */
 
-const CACHE_NAME = "oneword-cache-v0.8.0";
+const CACHE_NAME = "oneword-cache-v0.8.2";
 
 const PRECACHE_ASSETS = [
   "./",
   "./index.html",
   "./site.webmanifest",
   "./assets/icon.svg",
+  "./src/analytics/stats.js",
   "./src/app.js",
   "./src/audio/sound.js",
   "./src/canvas/cardGenerator.js",
